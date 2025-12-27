@@ -71,6 +71,27 @@ FINDING THE KEYS:
 • Gold key: In the library's HIDDEN archives (need ls -a)
 • Bronze key: In the armory
 
+DECODING THE KEYS:
+All three keys are Base64 encoded! To decode them:
+
+Example for silver key:
+  grep "BEGIN SILVER" -A 2 library/silver_key.txt | grep -v "BEGIN\|END" | base64 -d
+
+Or simpler:
+  echo "U2lsdmVyS2V5..." | base64 -d
+
+Do this for all three keys and write down what they say!
+
+UNLOCKING THE TREASURY:
+1. Decode all three keys
+2. Each reveals part of the master passphrase
+3. Combine the three parts (e.g., "Arcane" + "Wisdom" + "Power")
+4. Decode the encrypted_passphrase.txt file
+5. Run ./unlock_treasury.sh with the decoded treasury code
+
+To decode encrypted_passphrase.txt:
+  cat armory/treasury/encrypted_passphrase.txt | grep '^V2' | base64 -d
+
 THE LIBRARY ARCHIVES CHALLENGE:
 The archives contain 2000 scrolls! Don't read them manually!
 
@@ -79,6 +100,7 @@ Use GREP to search:
 • grep "SECRET" scroll_*.txt
 • grep "dragon" scroll_*.txt  
 • grep "GOLD_KEY" scroll_*.txt
+• grep "Ignis" scroll_*.txt
 
 You need to find THREE special scrolls:
 1. One mentions the dragon's TRUE NAME
@@ -90,12 +112,19 @@ Once you find where it is, you need to SEE hidden directories:
 • cd library
 • ls -a  (the 'a' shows ALL files, including hidden ones)
 • Look for directories starting with '.'
+• cd .secret_archives
 
 DRAGON TIPS:
 • Read library/dragon_lore.txt for the sleep spell
+• The dragon has an encrypted riddle - decode it with base64
 • Use grep in archives to find the dragon's TRUE NAME
 • Run ./sleep_dragon.sh in the dragon_lair
 • Speak BOTH parts together in one line
+
+EXAMPLE BASE64 COMMANDS:
+• echo "encoded_text" | base64 -d    (decode)
+• cat file.txt | base64               (encode)
+• grep "pattern" file | base64 -d     (search and decode)
 
 EXAMPLE GREP COMMANDS:
 • grep "word" file.txt              (search one file)
@@ -111,7 +140,7 @@ HIDDEN SECRET:
 NEED THE CHEAT SHEET?
 • cat CHEAT_SHEET.txt
 
-Remember: Grep is your best friend in the library!
+Remember: Cryptography and grep are your best friends!
 You can't manually read 2000 scrolls - that's the point!
 EOF
 
@@ -158,10 +187,29 @@ cat > library/silver_key.txt << 'EOF'
 You found the first key!
 (Key 1 of 3)
 
+But this is no ordinary key... it's a CRYPTOGRAPHIC KEY!
+
+-----BEGIN SILVER KEY-----
+U2lsdmVyS2V5OiBUaGlzIGlzIHRoZSBmaXJzdCBwYXJ0IG9mIHRoZSBtYXN0ZXIg
+cGFzc3BocmFzZTogIkFyY2FuZSIK
+-----END SILVER KEY-----
+
 The librarian nods approvingly.
-"Two more keys remain. One lies deep in my secret archives...
-But they are hidden from normal sight. Only those who know
-how to reveal the invisible can find them."
+"This key is encoded in Base64. You'll need to decode all three keys
+to reveal the master passphrase that unlocks the treasury!"
+
+⚡ NEW SPELL UNLOCKED: base64
+
+To decode this key, use:
+  base64 -d
+
+Try it! Copy the key part (the long string) and decode it:
+  echo "U2lsdmVyS2V5..." | base64 -d
+
+Or save it to a file and decode:
+  grep "BEGIN SILVER" -A 2 silver_key.txt | grep -v "BEGIN\|END" | base64 -d
+
+Write down what it says! You'll need all three decoded keys later!
 EOF
 
 # Create the archives directory with THOUSANDS of scrolls
@@ -283,11 +331,20 @@ cat > library/.secret_archives/gold_key.txt << 'EOF'
 You found the second key using your searching AND revealing skills!
 (Key 2 of 3)
 
+Another cryptographic key! This one is also Base64 encoded.
+
+-----BEGIN GOLD KEY-----
+R29sZEtleTogVGhlIHNlY29uZCBwYXJ0IG9mIHRoZSBtYXN0ZXIgcGFzc3BocmFz
+ZTogIldpc2RvbSIK
+-----END GOLD KEY-----
+
 "Excellent work!" says the librarian.
 "You've mastered both grep AND the art of seeing hidden things!
 
-Not all who wander are lost, but those who know 'ls -a' 
-certainly find more treasure!"
+Decode this key the same way you decoded the silver key:
+  grep "BEGIN GOLD" -A 2 gold_key.txt | grep -v "BEGIN\|END" | base64 -d
+
+Write down the decoded message! You need all three parts!"
 EOF
 
 cat > library/.secret_archives/archival_note.txt << 'EOF'
@@ -364,7 +421,20 @@ cat > armory/bronze_key.txt << 'EOF'
 You found the third key!
 (Key 3 of 3)
 
-All three keys are yours! The treasury awaits!
+The final cryptographic key!
+
+-----BEGIN BRONZE KEY-----
+QnJvbnplS2V5OiBUaGUgdGhpcmQgYW5kIGZpbmFsIHBhcnQgb2YgdGhlIG1hc3Rl
+ciBwYXNzcGhyYXNlOiAiUG93ZXIiCg==
+-----END BRONZE KEY-----
+
+All three keys are yours! Decode this one too:
+  grep "BEGIN BRONZE" -A 2 bronze_key.txt | grep -v "BEGIN\|END" | base64 -d
+
+Once you have all three decoded parts, combine them to form
+the MASTER PASSPHRASE that unlocks the treasury door!
+
+The treasury awaits deeper in the armory...
 EOF
 
 # Create a locked scroll (no read permission initially)
@@ -759,14 +829,22 @@ You must speak the ancient incantation to put it to sleep!
 
 The incantation has TWO parts:
 1. The sleep spell (found in library/dragon_lore.txt)
-2. The dragon's TRUE NAME (hidden in library/scroll_13.txt)
+2. The dragon's TRUE NAME (hidden in library/archives - one of 2000 scrolls!)
+
+But wait... the dragon has left you an encrypted riddle:
+
+-----BEGIN DRAGON RIDDLE-----
+TXkgdHJ1ZSBuYW1lIGlzIGhpZGRlbiBpbiBzY3JvbGwgIzA2NjYuIFVzZSBncmVw
+IHRvIGZpbmQgaXQhIFNlYXJjaGluZyBmb3IgIklnbmlzIiBvciBkcmFnb24ncyAi
+dHJ1ZSBuYW1lIiB3aWxsIGhlbHAuCg==
+-----END DRAGON RIDDLE-----
+
+Decode this hint with: echo "TXkgdHJ..." | base64 -d
 
 To face the dragon, run: ./sleep_dragon.sh
 
 You must speak BOTH parts together in ONE command!
 Hint: echo "first_part second_part"
-
-Use grep to find the clues if you haven't already!
 EOF
 
 # Create the interactive dragon fight script!
