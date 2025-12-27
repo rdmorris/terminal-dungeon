@@ -67,28 +67,52 @@ GENERAL TIPS:
 • Use 'cd ..' to go back
 
 FINDING THE KEYS:
-• Silver key: In the library
-• Gold key: In library's secret_archives
+• Silver key: In the library (main directory)
+• Gold key: In the library's HIDDEN archives (need ls -a)
 • Bronze key: In the armory
+
+THE LIBRARY ARCHIVES CHALLENGE:
+The archives contain 2000 scrolls! Don't read them manually!
+
+Use GREP to search:
+• cd library/archives
+• grep "SECRET" scroll_*.txt
+• grep "dragon" scroll_*.txt  
+• grep "GOLD_KEY" scroll_*.txt
+
+You need to find THREE special scrolls:
+1. One mentions the dragon's TRUE NAME
+2. One mentions GOLD_KEY_LOCATION
+3. One gives you a helpful grep tip
+
+FINDING THE GOLD KEY:
+Once you find where it is, you need to SEE hidden directories:
+• cd library
+• ls -a  (the 'a' shows ALL files, including hidden ones)
+• Look for directories starting with '.'
 
 DRAGON TIPS:
 • Read library/dragon_lore.txt for the sleep spell
-• Use 'grep "SECRET" library/*.txt' to find the dragon's name
-• You need BOTH parts in one command: ./sleep_dragon.sh
+• Use grep in archives to find the dragon's TRUE NAME
+• Run ./sleep_dragon.sh in the dragon_lair
+• Speak BOTH parts together in one line
 
-STUCK ON GREP?
-• Try: grep "GOLD_KEY" library/*.txt
-• This searches all .txt files in library for "GOLD_KEY"
+EXAMPLE GREP COMMANDS:
+• grep "word" file.txt              (search one file)
+• grep "word" *.txt                 (search all .txt files)
+• grep -i "word" *.txt              (case-insensitive)
+• grep -n "word" *.txt              (show line numbers)
+• grep "EXACT PHRASE" *.txt         (search for phrase)
 
 HIDDEN SECRET:
 • Use 'ls -a' to see hidden files and directories
-• Look for things starting with .
+• Look for things starting with '.'
 
 NEED THE CHEAT SHEET?
 • cat CHEAT_SHEET.txt
 
-Remember: Exploration and experimentation are key!
-Every scroll you read teaches you something new!
+Remember: Grep is your best friend in the library!
+You can't manually read 2000 scrolls - that's the point!
 EOF
 
 # ===================
@@ -124,7 +148,8 @@ Try these:
 
 Press 'q' to quit the manual when you're done reading.
 
-Some scrolls here contain secrets. You'll need another spell to find them..."
+The archives contain thousands of ancient scrolls. 
+Some hold great secrets... you'll need powerful magic to find them."
 EOF
 
 cat > library/silver_key.txt << 'EOF'
@@ -134,66 +159,155 @@ You found the first key!
 (Key 1 of 3)
 
 The librarian nods approvingly.
-"Two more keys remain. One lies in my secret archives..."
+"Two more keys remain. One lies deep in my secret archives...
+But they are hidden from normal sight. Only those who know
+how to reveal the invisible can find them."
 EOF
 
-# Create many scroll files for grep practice
-for i in {1..20}; do
-  cat > library/scroll_$i.txt << EOF
-Ancient Scroll #$i
+# Create the archives directory with THOUSANDS of scrolls
+mkdir -p library/archives
 
-This scroll contains historical records.
-Date: Year $(( 1000 + i * 10 ))
-Weather: Cloudy
+echo "Creating thousands of ancient scrolls in the library archives..."
+
+# Create 2000 scrolls with random historical content
+for i in {1..2000}; do
+  year=$((1000 + i))
+  weather=("Sunny" "Cloudy" "Rainy" "Stormy" "Foggy" "Clear")
+  event=("harvest festival" "royal decree" "merchant caravan arrived" "nothing of note" "village celebration" "eclipse observed")
+  
+  cat > library/archives/scroll_$(printf "%04d" $i).txt << EOF
+Ancient Scroll #$(printf "%04d" $i)
+
+Year: $year
+Weather: ${weather[$RANDOM % 6]}
+Event: ${event[$RANDOM % 6]}
+Status: Record archived
 EOF
 done
 
-# Hide the important scroll
-cat > library/scroll_13.txt << 'EOF'
-Ancient Scroll #13
+# Hide the THREE important scrolls with clues among the 2000!
+cat > library/archives/scroll_0666.txt << 'EOF'
+Ancient Scroll #0666
 
-This scroll contains historical records.
-Date: Year 1130
-SECRET CLUE: The dragon's true name is "Ignis Maximus"
-Weather: Stormy
-Hidden message: GOLD_KEY_LOCATION=secret_archives
+Year: 1666
+Weather: Dark and ominous
+Event: A traveling scholar visited
+Status: UNUSUAL ENTRY
+
+The scholar spoke of a great beast that guards ancient treasure.
+He said: "The dragon's true name, written in the old tongue, is 'Ignis Maximus'.
+Only by speaking its name can one hope to command it."
+
+I have recorded this in case it proves useful to future adventurers.
+EOF
+
+cat > library/archives/scroll_1313.txt << 'EOF'
+Ancient Scroll #1313
+
+Year: 2313
+Weather: Mystical aurora
+Event: SECRET_CLUE_FOUND
+Status: CONFIDENTIAL
+
+ATTENTION FUTURE WIZARDS:
+The GOLD_KEY location has been discovered!
+It is hidden in the librarian's SECRET_ARCHIVES.
+
+But these archives are HIDDEN from normal sight.
+Only those who know the spell to reveal invisible things can find them.
+
+Hint: Use 'ls -a' to see ALL things, even those that start with a dot.
+EOF
+
+cat > library/archives/scroll_0042.txt << 'EOF'
+Ancient Scroll #0042
+
+Year: 1042
+Weather: Clear skies
+Event: The Answer was discovered
+Status: Philosophical
+
+A wizard asked: "How many scrolls must one read to find truth?"
+The answer, as always, is 42.
+
+But seriously, there are thousands of scrolls here.
+Reading them all with 'cat scroll_*.txt' would take forever!
+
+Wise wizards use GREP to search for specific words:
+  grep "SECRET" scroll_*.txt
+  grep "GOLD_KEY" scroll_*.txt
+  grep -i "dragon" scroll_*.txt
+
+Work smarter, not harder!
 EOF
 
 cat > library/search_scroll.txt << 'EOF'
 🔍 SCROLL OF SEARCHING 🔍
 
-"Young wizard, the library has thousands of scrolls.
-Reading each one would take years!
+"Young wizard, the archives now contain over 2000 ancient scrolls!
+Reading each one would take days!
 
 ⚡ NEW SPELL UNLOCKED: grep
 
 The GREP spell searches for words inside files!
 
-Try these:
+THE ARCHIVES CHALLENGE:
+Somewhere in the 2000 scrolls in the 'archives' directory, there are
+THREE special scrolls containing vital information:
+1. The dragon's TRUE NAME
+2. The location of the GOLD_KEY  
+3. A helpful hint about using grep itself
+
+Try these commands:
+• cd archives
 • grep "SECRET" scroll_*.txt
-• grep "GOLD_KEY" *.txt
-• grep -n "dragon" *.txt  (shows line numbers)
-• grep -i "secret" *.txt  (ignores case)
+• grep "dragon" scroll_*.txt
+• grep "GOLD_KEY" scroll_*.txt
+• grep -n "dragon" scroll_*.txt  (shows line numbers)
+• grep -i "secret" scroll_*.txt  (ignores case)
 
 Use 'man grep' to learn more!
 
-Hint: One of the scrolls here contains a SECRET CLUE about
-the dragon and the GOLD_KEY_LOCATION. Find it!"
+POWER TIP: You can search from the library directory too:
+  grep "SECRET" archives/scroll_*.txt
+
+Find those three special scrolls! Your quest depends on it!"
 EOF
 
-mkdir -p library/secret_archives
+# Create the HIDDEN secret archives (starts with .)
+mkdir -p library/.secret_archives
 
-cat > library/secret_archives/gold_key.txt << 'EOF'
+cat > library/.secret_archives/gold_key.txt << 'EOF'
 🗝️  THE GOLDEN KEY! 🗝️
 
-You found the second key using your searching skills!
+You found the second key using your searching AND revealing skills!
 (Key 2 of 3)
 
 "Excellent work!" says the librarian.
-"You've mastered grep. But there's one more spell you need here..."
+"You've mastered both grep AND the art of seeing hidden things!
+
+Not all who wander are lost, but those who know 'ls -a' 
+certainly find more treasure!"
 EOF
 
-cat > library/secret_archives/find_scroll.txt << 'EOF'
+cat > library/.secret_archives/archival_note.txt << 'EOF'
+📜 CONFIDENTIAL ARCHIVAL NOTE 📜
+
+The gold key is stored here in the secret archives.
+
+This directory is HIDDEN (starts with a dot).
+Normal 'ls' won't show it, but 'ls -a' reveals all!
+
+This is how Unix/Linux systems hide configuration files:
+• .bashrc (bash configuration)
+• .ssh/ (SSH keys)  
+• .gitconfig (git settings)
+
+Directories and files starting with '.' are invisible to normal listing.
+Now you know the secret!
+EOF
+
+cat > library/.secret_archives/find_scroll.txt << 'EOF'
 🔎 SCROLL OF SEEKING 🔎
 
 ⚡ NEW SPELL UNLOCKED: find
@@ -204,12 +318,15 @@ Try these:
 • find . -name "*.txt"           (find all .txt files)
 • find . -name "*key*"           (find files with 'key' in name)
 • find . -type d                 (find all directories)
-• find . -name "*.txt" | wc -l   (count txt files)
+• find . -name "scroll_*.txt" | wc -l   (count scroll files)
+
+CHALLENGE: How many scroll files are in the entire library?
+Try: find . -name "scroll_*.txt" | wc -l
 
 The library is vast. Use 'find' to discover hidden chambers!
 EOF
 
-cat > library/secret_archives/pwd_scroll.txt << 'EOF'
+cat > library/.secret_archives/pwd_scroll.txt << 'EOF'
 📍 SCROLL OF LOCATION 📍
 
 ⚡ NEW SPELL: pwd
@@ -218,6 +335,10 @@ This spell shows your EXACT location in the dungeon!
 Essential when paths become complex.
 
 Try: pwd
+
+You'll see something like: /path/to/terminal_dungeon/library/.secret_archives
+
+This shows you're in a hidden directory inside the library!
 EOF
 
 # ===================
@@ -911,29 +1032,39 @@ echo ""
 echo "📚 LEGENDARY DUNGEON INCLUDES:"
 echo "   - 3 Main areas (Library, Armory, Portal Chamber)"
 echo "   - 3 Realms (Ice Castle, Fire Mountain, Sky Tower)"
+echo "   - 2000+ ancient scrolls to search through!"
 echo "   - 20+ spells to discover progressively"
 echo "   - INTERACTIVE dragon boss fight"
+echo "   - Hidden archives (. prefix) with secrets"
 echo "   - Secret ending with hidden realm"
 echo "   - Text editor training (nano/vim)"
 echo "   - Complete cheat sheet + hints"
 echo ""
-echo "🐉 NEW FEATURES:"
-echo "   ✓ Dragon actually checks your incantation!"
+echo "🐉 EPIC FEATURES:"
+echo "   ✓ Dragon validates your incantation!"
+echo "   ✓ 2000 scrolls - grep is ESSENTIAL!"
+echo "   ✓ Hidden .secret_archives (need ls -a)"
 echo "   ✓ Victory fanfare when you win"
-echo "   ✓ Text editing lessons"
-echo "   ✓ Hidden realm with ls -a"
-echo "   ✓ Hints file for when stuck"
+echo "   ✓ Three special scrolls among thousands"
 echo ""
 echo "To begin your epic adventure:"
 echo "  cd terminal_dungeon"
 echo "  cat welcome.txt"
 echo ""
+echo "⚠️  LIBRARY CHALLENGE:"
+echo "    The archives contain 2000 scrolls!"
+echo "    Use 'grep' to find the 3 special ones:"
+echo "    - Dragon's true name"
+echo "    - Gold key location  "
+echo "    - Helpful grep hint"
+echo ""
 echo "If you get stuck:"
 echo "  cat HINTS.txt"
 echo "  cat CHEAT_SHEET.txt"
 echo ""
-echo "🎮 TIP: The dragon fight is REAL - you must speak the"
-echo "    correct incantation by running ./sleep_dragon.sh"
-echo "    in the dragon_lair directory!"
+echo "🎮 TIP: Don't try to read all 2000 scrolls manually!"
+echo "    That's what grep is for! Try:"
+echo "    cd library/archives"
+echo "    grep 'SECRET' scroll_*.txt"
 echo ""
 echo "Good luck, brave adventurer! 🗡️ ⚔️ 🏰 🐉"
