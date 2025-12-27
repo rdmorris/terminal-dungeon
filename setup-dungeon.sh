@@ -35,6 +35,14 @@ Current location has these areas to explore:
 - armory (weapons and power)
 - portal_chamber (travel to other realms!)
 
+📋 HELPFUL FILES:
+• HINTS.txt - Stuck? Read this
+• CHEAT_SHEET.txt - Command reference
+• quest_log.txt - Track your progress
+
+To read them, you must navigate back here and use cat:
+  cat HINTS.txt
+
 Start your adventure: Try "ls" to see what's here!
 EOF
 
@@ -200,16 +208,23 @@ to reveal the master passphrase that unlocks the treasury!"
 
 ⚡ NEW SPELL UNLOCKED: base64
 
-To decode this key, use:
-  base64 -d
+To decode this key:
+  echo "U2lsdmVyK..." | base64 -d
 
-Try it! Copy the key part (the long string) and decode it:
-  echo "U2lsdmVyS2V5..." | base64 -d
-
-Or save it to a file and decode:
+Or extract and decode in one command:
   grep "BEGIN SILVER" -A 2 silver_key.txt | grep -v "BEGIN\|END" | base64 -d
 
-Write down what it says! You'll need all three decoded keys later!
+💡 PRO TIP: Save decoded keys as ENVIRONMENT VARIABLES!
+
+Try this:
+  export SILVER_KEY=$(grep "BEGIN SILVER" -A 2 silver_key.txt | grep -v "BEGIN\|END" | base64 -d)
+  echo $SILVER_KEY
+
+Now you can access this key from anywhere in the dungeon!
+Check it anytime with: echo $SILVER_KEY
+
+Do this for all three keys, then combine them:
+  export MASTER_PASS="${SILVER_KEY}${GOLD_KEY}${BRONZE_KEY}"
 EOF
 
 # Create the archives directory with THOUSANDS of scrolls
@@ -344,7 +359,10 @@ ZTogIldpc2RvbSIK
 Decode this key the same way you decoded the silver key:
   grep "BEGIN GOLD" -A 2 gold_key.txt | grep -v "BEGIN\|END" | base64 -d
 
-Write down the decoded message! You need all three parts!"
+WRITE DOWN this decoded part too! Keep track of all three parts.
+You're getting quite deep in the dungeon now...
+Are you finding it tedious to navigate back to check hints? 
+The spell forge in the armory might help with that..."
 EOF
 
 cat > library/.secret_archives/archival_note.txt << 'EOF'
@@ -431,10 +449,18 @@ ciBwYXNzcGhyYXNlOiAiUG93ZXIiCg==
 All three keys are yours! Decode this one too:
   grep "BEGIN BRONZE" -A 2 bronze_key.txt | grep -v "BEGIN\|END" | base64 -d
 
-Once you have all three decoded parts, combine them to form
-the MASTER PASSPHRASE that unlocks the treasury door!
+Now combine all three decoded parts to form the MASTER PASSPHRASE!
 
-The treasury awaits deeper in the armory...
+If you've been writing them down:
+  Part 1: Arcane
+  Part 2: Wisdom
+  Part 3: Power
+  Combined: ArcaneWisdomPower
+
+Or if you learned about environment variables in the spell_forge:
+  echo "${SILVER_KEY}${GOLD_KEY}${BRONZE_KEY}"
+
+The treasury awaits! cd ../treasury
 EOF
 
 # Create a locked scroll (no read permission initially)
@@ -538,22 +564,135 @@ mkdir -p armory/spell_forge
 cat > armory/spell_forge/forge_intro.txt << 'EOF'
 🔨 THE SPELL FORGE 🔨
 
-Here you can create your OWN custom spells!
+You enter a chamber filled with magical forging equipment.
+A scroll catches your eye...
 
-⚡ NEW SPELL: alias
+"ARE YOU TIRED OF NAVIGATING BACK AND FORTH?"
 
-Aliases let you create shortcuts for complex commands!
+"Do you find yourself constantly doing this?"
+  • cd ../../..
+  • cat HINTS.txt
+  • cd library/archives
+  • Ugh, I forgot what it said!
+  • cd ../../..
+  • cat HINTS.txt again...
 
-Try these:
-• alias teleport='cd'
-• teleport ..
-• alias reveal='ls -la'
-• reveal
+"Have you been manually re-typing long base64 decode commands?"
+"Forgetting which key parts you already decoded?"
+"Wishing there was a better way?"
 
-These shortcuts only last while you're in the dungeon.
-To make them permanent, you'd add them to ~/.bashrc
+THERE IS! Let me teach you the ancient arts of AUTOMATION!
 
-Use 'man bash' and search for 'alias' to learn more!
+⚡ NEW SPELLS UNLOCKED: alias and export
+
+═══════════════════════════════════════════════════
+ALIASES - Custom Shortcuts
+═══════════════════════════════════════════════════
+
+Stop typing the same long commands over and over!
+Create shortcuts:
+
+  alias hints='cat ../../HINTS.txt'
+  alias cheats='cat ../../CHEAT_SHEET.txt'
+
+Now just type: hints
+No more cd ../../../ and back!
+
+More examples:
+  alias teleport='cd'
+  alias reveal='ls -la'
+  alias back='cd ..'
+
+═══════════════════════════════════════════════════
+ENVIRONMENT VARIABLES - Remember Everything
+═══════════════════════════════════════════════════
+
+Stop re-decoding the same keys!
+Store decoded information:
+
+Instead of decoding silver_key.txt every time:
+  export SILVER_KEY=$(cat /path/to/silver_key.txt | base64 -d)
+
+Now check it anytime, from anywhere:
+  echo $SILVER_KEY
+
+GAME CHANGER - Save your dungeon home:
+  export DUNGEON_HOME=/full/path/to/terminal_dungeon
+
+Now you can always find things:
+  alias hints='cat $DUNGEON_HOME/HINTS.txt'
+  alias cheats='cat $DUNGEON_HOME/CHEAT_SHEET.txt'
+  alias home='cd $DUNGEON_HOME'
+
+These work from ANYWHERE in the dungeon!
+
+═══════════════════════════════════════════════════
+RECOMMENDED SETUP FOR THIS QUEST
+═══════════════════════════════════════════════════
+
+Run these commands NOW to make your life easier:
+
+# Save your starting point
+export DUNGEON_HOME=$(cd ../../.. && pwd && cd - > /dev/null)
+
+# Create helpful aliases
+alias hints='cat $DUNGEON_HOME/HINTS.txt'
+alias cheats='cat $DUNGEON_HOME/CHEAT_SHEET.txt'
+alias quest='cat $DUNGEON_HOME/quest_log.txt'
+alias home='cd $DUNGEON_HOME'
+
+# Test it
+hints
+
+MIND = BLOWN, right? 🤯
+
+═══════════════════════════════════════════════════
+FOR YOUR KEY QUEST
+═══════════════════════════════════════════════════
+
+Stop re-decoding keys! Save them once:
+
+From the silver_key.txt location:
+  export SILVER_KEY=$(grep "BEGIN SILVER" -A 2 silver_key.txt | grep -v "BEGIN\|END" | base64 -d)
+
+From the gold_key.txt location:
+  export GOLD_KEY=$(grep "BEGIN GOLD" -A 2 gold_key.txt | grep -v "BEGIN\|END" | base64 -d)
+
+From the bronze_key.txt location:
+  export BRONZE_KEY=$(grep "BEGIN BRONZE" -A 2 bronze_key.txt | grep -v "BEGIN\|END" | base64 -d)
+
+Check them anytime:
+  echo $SILVER_KEY
+  echo $GOLD_KEY
+  echo $BRONZE_KEY
+
+Combine them easily:
+  echo "$SILVER_KEY $GOLD_KEY $BRONZE_KEY"
+
+Create an alias to show all keys:
+  alias showkeys='echo "Silver: $SILVER_KEY" && echo "Gold: $GOLD_KEY" && echo "Bronze: $BRONZE_KEY"'
+
+═══════════════════════════════════════════════════
+WHY THIS MATTERS IN THE REAL WORLD
+═══════════════════════════════════════════════════
+
+• API keys and tokens: export GITHUB_TOKEN=xxx
+• Database passwords: export DB_PASS=secret
+• Frequently used paths: alias logs='cd /var/log'
+• Complex commands: alias update='sudo apt update && sudo apt upgrade'
+• Development environments: export NODE_ENV=production
+
+Professional developers use these CONSTANTLY!
+
+⚠️  NOTE: These only last for your current terminal session.
+To make them permanent, add them to ~/.bashrc or ~/.bash_profile
+
+Type 'man bash' and search for 'alias' or 'ENVIRONMENT' to learn more!
+
+═══════════════════════════════════════════════════
+
+You've been doing it the hard way. Now you know the smart way.
+Welcome to wizard-level terminal mastery! 🧙‍♂️
 EOF
 
 cat > armory/spell_forge/piping_scroll.txt << 'EOF'
