@@ -1,0 +1,10 @@
+# Don't commit the generated dungeon
+terminal_dungeon/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*~
