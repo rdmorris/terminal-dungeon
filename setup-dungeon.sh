@@ -721,7 +721,7 @@ mkdir -p portal_chamber
 cat > portal_chamber/portal_intro.txt << 'EOF'
 🌀 THE PORTAL CHAMBER 🌀
 
-Three ancient portals stand before you, each leading to a different realm!
+Four ancient portals stand before you, each leading to a different realm!
 
 ⚡ NEW SPELL: ssh (Secure Shell - Teleportation Magic)
 
@@ -729,10 +729,14 @@ SSH lets you teleport to other castles/realms!
 
 The syntax is: ssh username@hostname
 
-For practice in this dungeon, we have three local realms:
-• ice_castle
-• fire_mountain  
-• sky_tower
+For practice in this dungeon, we have FOUR realms:
+• ice_castle (File operations)
+• fire_mountain (Process management)
+• sky_tower (Networking)
+• masters_tower (Advanced terminal mastery) ⭐ NEW!
+
+The Masters Tower is only accessible to those who have conquered
+the dragon and proven themselves worthy!
 
 But in the real world, you could SSH to actual remote servers!
 
@@ -911,6 +915,809 @@ ping examples:
 
 You can control the internet from the terminal!
 Building websites, downloading data, managing servers!
+EOF
+
+# ===================
+# MASTERS TOWER - Advanced Commands (Post-Game Content)
+# ===================
+mkdir -p portal_chamber/masters_tower
+
+cat > portal_chamber/masters_tower/entrance.txt << 'EOF'
+🏰 THE MASTERS TOWER 🏰
+
+"Greetings, Dragon Slayer!"
+
+A robed figure appears before you.
+
+"You have conquered the main dungeon, but your journey
+to terminal mastery has only begun.
+
+Within this tower lie the ADVANCED ARTS:
+• Text Processing Laboratory
+• Archive Vault
+• Comparison Chamber  
+• Binary Mysteries
+• Transformation Workshop
+
+Each chamber teaches powerful spells used by master wizards
+in the real world of software, security, and system administration.
+
+Are you ready to ascend to TRUE mastery?"
+
+Explore the chambers with 'ls' and 'cd'!
+EOF
+
+# ===================
+# TEXT PROCESSING LAB (Tier 1: head, tail, wc, sort, uniq)
+# ===================
+mkdir -p portal_chamber/masters_tower/text_processing_lab
+
+cat > portal_chamber/masters_tower/text_processing_lab/README.txt << 'EOF'
+📊 TEXT PROCESSING LABORATORY 📊
+
+Welcome to the Text Processing Lab!
+
+Here you will master the essential spells for manipulating text:
+• head/tail - Preview and extract from files
+• wc - Count words, lines, and characters
+• sort - Organize data
+• uniq - Find unique entries
+• cut - Extract specific columns
+
+These spells are used CONSTANTLY in real terminal work:
+• Analyzing logs
+• Processing CSV data
+• Cleaning up data sets
+• Quick statistics
+
+Explore each scroll to learn these powerful techniques!
+EOF
+
+# Create sample data for demonstrations
+cat > portal_chamber/masters_tower/text_processing_lab/sample_data.txt << 'EOF'
+apple
+banana
+cherry
+date
+elderberry
+fig
+grape
+honeydew
+kiwi
+lemon
+mango
+nectarine
+orange
+papaya
+quince
+raspberry
+strawberry
+tangerine
+ugli fruit
+vanilla
+watermelon
+EOF
+
+cat > portal_chamber/masters_tower/text_processing_lab/head_tail_scroll.txt << 'EOF'
+📜 HEAD AND TAIL SCROLLS 📜
+
+⚡ NEW SPELLS: head and tail
+
+These spells let you preview files without reading everything!
+
+HEAD - See the beginning:
+• head file.txt           (first 10 lines)
+• head -n 5 file.txt      (first 5 lines)
+• head -n 20 file.txt     (first 20 lines)
+
+TAIL - See the end:
+• tail file.txt           (last 10 lines)
+• tail -n 5 file.txt      (last 5 lines)
+• tail -f file.txt        (follow file as it grows - great for logs!)
+
+Try them on sample_data.txt:
+  head -n 3 sample_data.txt
+  tail -n 3 sample_data.txt
+
+REAL-WORLD USES:
+• head /var/log/syslog           (check recent log entries)
+• tail -f /var/log/apache2/access.log  (watch live traffic)
+• head -n 100 bigfile.csv        (preview large data)
+
+POWER COMBO:
+  head -n 50 file.txt | tail -n 10
+  (gets lines 41-50!)
+EOF
+
+cat > portal_chamber/masters_tower/text_processing_lab/wc_scroll.txt << 'EOF'
+🔢 WORD COUNT SCROLL 🔢
+
+⚡ NEW SPELL: wc (word count)
+
+This spell counts lines, words, and characters!
+
+Basic usage:
+• wc file.txt             (shows lines, words, chars)
+• wc -l file.txt          (count lines only)
+• wc -w file.txt          (count words only)
+• wc -c file.txt          (count characters only)
+
+Try it:
+  wc sample_data.txt
+  wc -l sample_data.txt
+
+POWER COMBOS:
+  ls | wc -l                    (count files in directory)
+  grep "dragon" *.txt | wc -l   (count matches)
+  find . -name "*.txt" | wc -l  (count all txt files)
+
+REAL-WORLD EXAMPLES:
+  wc -l access.log              (count log entries)
+  cat file.txt | wc -w          (count words)
+  git log --oneline | wc -l     (count commits)
+
+You used this earlier with pipes!
+Now you know what it's really doing!
+EOF
+
+cat > portal_chamber/masters_tower/text_processing_lab/sort_scroll.txt << 'EOF'
+📊 SORTING SCROLL 📊
+
+⚡ NEW SPELL: sort
+
+Organize data alphabetically or numerically!
+
+Basic usage:
+• sort file.txt           (alphabetical)
+• sort -r file.txt        (reverse order)
+• sort -n file.txt        (numerical sort)
+• sort -u file.txt        (unique - removes duplicates)
+
+Try it:
+  sort sample_data.txt
+  sort -r sample_data.txt
+
+ADVANCED:
+• sort -k 2 file.txt      (sort by 2nd column)
+• sort -t ',' -k 3 file.csv  (CSV sort by 3rd column)
+
+Create test data:
+  echo -e "zebra\napple\nmango\nbanana" | sort
+
+REAL-WORLD USES:
+  sort names.txt > sorted_names.txt
+  du -h * | sort -h         (sort by human-readable sizes)
+  history | sort | uniq     (find unique commands used)
+EOF
+
+cat > portal_chamber/masters_tower/text_processing_lab/uniq_scroll.txt << 'EOF'
+🎯 UNIQUE SCROLL 🎯
+
+⚡ NEW SPELL: uniq
+
+Find or remove duplicate lines!
+
+IMPORTANT: uniq only works on SORTED input!
+Use with sort first!
+
+Basic usage:
+• uniq file.txt           (remove adjacent duplicates)
+• uniq -c file.txt        (count occurrences)
+• uniq -d file.txt        (show only duplicates)
+• uniq -u file.txt        (show only unique lines)
+
+Create test file:
+  echo -e "apple\napple\nbanana\napple\nbanana\ncherry" > duplicates.txt
+  
+  sort duplicates.txt | uniq
+  sort duplicates.txt | uniq -c
+
+POWER COMBO:
+  sort file.txt | uniq -c | sort -rn
+  (count duplicates, sort by frequency!)
+
+REAL-WORLD EXAMPLES:
+  history | awk '{print $2}' | sort | uniq -c | sort -rn
+  (most used commands!)
+  
+  cat access.log | cut -d' ' -f1 | sort | uniq -c
+  (count unique IP addresses)
+EOF
+
+cat > portal_chamber/masters_tower/text_processing_lab/cut_scroll.txt << 'EOF'
+✂️  CUTTING SCROLL ✂️
+
+⚡ NEW SPELL: cut
+
+Extract specific columns or fields from text!
+
+Basic usage:
+• cut -c 1-5 file.txt     (characters 1-5)
+• cut -f 1 file.txt       (first field, tab-delimited)
+• cut -d',' -f 2 file.csv (2nd field, comma-delimited)
+
+Create CSV test data:
+  echo -e "name,age,city\nAlice,30,NYC\nBob,25,LA\nCarol,35,Chicago" > people.csv
+  
+  cut -d',' -f 1 people.csv  (just names)
+  cut -d',' -f 2 people.csv  (just ages)
+
+MULTIPLE FIELDS:
+  cut -d',' -f 1,3 people.csv  (name and city)
+
+REAL-WORLD EXAMPLES:
+  cut -d':' -f 1 /etc/passwd     (list all usernames)
+  ls -l | cut -c 1-10            (just permissions)
+  cat log.txt | cut -d' ' -f 3   (extract 3rd column)
+
+POWER COMBO:
+  grep "ERROR" log.txt | cut -d' ' -f 1,5 | sort | uniq
+  (find unique error patterns!)
+EOF
+
+# ===================
+# ARCHIVE VAULT (Tier 1: tar, Tier 2: gzip/gunzip)
+# ===================
+mkdir -p portal_chamber/masters_tower/archive_vault
+
+cat > portal_chamber/masters_tower/archive_vault/README.txt << 'EOF'
+📦 THE ARCHIVE VAULT 📦
+
+Ancient scrolls sealed in compressed archives!
+
+You will learn:
+• tar - Archive and extract files
+• gzip/gunzip - Compress and decompress
+
+These are ESSENTIAL for:
+• Downloading software
+• Backing up files
+• Deploying applications
+• Sharing multiple files
+
+Every developer uses these constantly!
+EOF
+
+# Create files to archive
+mkdir -p portal_chamber/masters_tower/archive_vault/scrolls_to_archive
+cat > portal_chamber/masters_tower/archive_vault/scrolls_to_archive/scroll1.txt << 'EOF'
+Ancient Scroll 1: The power of archiving
+EOF
+cat > portal_chamber/masters_tower/archive_vault/scrolls_to_archive/scroll2.txt << 'EOF'
+Ancient Scroll 2: Compression saves space
+EOF
+cat > portal_chamber/masters_tower/archive_vault/scrolls_to_archive/scroll3.txt << 'EOF'
+Ancient Scroll 3: tar.gz is everywhere
+EOF
+
+cat > portal_chamber/masters_tower/archive_vault/tar_scroll.txt << 'EOF'
+📦 TAR SCROLL (Tape ARchive) 📦
+
+⚡ NEW SPELL: tar
+
+TAR bundles multiple files into one archive!
+
+CREATING ARCHIVES:
+• tar -cf archive.tar files/      (create archive)
+• tar -czf archive.tar.gz files/  (create + compress)
+• tar -czvf archive.tar.gz files/ (verbose - shows progress)
+
+EXTRACTING:
+• tar -xf archive.tar              (extract)
+• tar -xzf archive.tar.gz          (extract compressed)
+• tar -xzvf archive.tar.gz         (verbose extract)
+
+VIEWING:
+• tar -tf archive.tar              (list contents)
+• tar -tzf archive.tar.gz          (list compressed archive)
+
+PRACTICE:
+  cd scrolls_to_archive
+  tar -czf ../ancient_scrolls.tar.gz *.txt
+  cd ..
+  tar -tzf ancient_scrolls.tar.gz
+
+REMEMBER THE FLAGS:
+• c = create
+• x = extract
+• t = list
+• f = file
+• z = gzip
+• v = verbose
+
+REAL-WORLD:
+  tar -czf backup.tar.gz ~/Documents/
+  tar -xzf software-1.2.3.tar.gz
+  
+Almost all Linux software is distributed as .tar.gz!
+EOF
+
+cat > portal_chamber/masters_tower/archive_vault/gzip_scroll.txt << 'EOF'
+🗜️  COMPRESSION SCROLL 🗜️
+
+⚡ NEW SPELLS: gzip and gunzip
+
+Compress files to save space!
+
+COMPRESS:
+• gzip file.txt           (creates file.txt.gz, removes original)
+• gzip -k file.txt        (keep original)
+• gzip -9 file.txt        (maximum compression)
+
+DECOMPRESS:
+• gunzip file.txt.gz
+• gzip -d file.txt.gz     (same as gunzip)
+
+VIEW WITHOUT EXTRACTING:
+• zcat file.txt.gz        (view compressed file)
+• zgrep "pattern" file.gz (grep in compressed file!)
+• zless file.txt.gz       (page through compressed file)
+
+CREATE TEST:
+  echo "This is a test file with repeating text text text" > test.txt
+  ls -lh test.txt
+  gzip -k test.txt
+  ls -lh test.txt.gz
+  (notice the size difference!)
+
+REAL-WORLD:
+  gzip -r logs/             (compress all files in directory)
+  gzip -9 backup.sql        (maximum compression for backups)
+  zgrep "ERROR" app.log.gz  (search compressed logs!)
+
+NOTE: tar -czf combines tar and gzip automatically!
+EOF
+
+# Create a sealed archive challenge
+cd portal_chamber/masters_tower/archive_vault
+tar -czf sealed_ancient_archive.tar.gz scrolls_to_archive/ 2>/dev/null
+cd - > /dev/null
+
+cat > portal_chamber/masters_tower/archive_vault/challenge.txt << 'EOF'
+🎯 ARCHIVE CHALLENGE 🎯
+
+A sealed archive has been discovered: sealed_ancient_archive.tar.gz
+
+Your mission:
+1. List the contents without extracting
+2. Extract the archive
+3. Read the scrolls
+4. Re-compress them with maximum compression
+
+Commands:
+  tar -tzf sealed_ancient_archive.tar.gz
+  tar -xzf sealed_ancient_archive.tar.gz
+  gzip -9 scrolls_to_archive/*.txt
+
+You are now an Archive Master! 📦
+EOF
+
+# ===================
+# COMPARISON CHAMBER (Tier 2: diff)
+# ===================
+mkdir -p portal_chamber/masters_tower/comparison_chamber
+
+cat > portal_chamber/masters_tower/comparison_chamber/README.txt << 'EOF'
+⚖️  THE COMPARISON CHAMBER ⚖️
+
+Two ancient prophecies have been discovered.
+They appear nearly identical... but one has been corrupted!
+
+Learn the DIFF spell to find the differences!
+
+Used by developers every day for:
+• Comparing code versions
+• Finding changes in config files
+• Code reviews
+• Git version control
+EOF
+
+# Create two similar files with differences
+cat > portal_chamber/masters_tower/comparison_chamber/prophecy_original.txt << 'EOF'
+THE ANCIENT PROPHECY
+
+When the three keys are united,
+And the dragon falls to slumber,
+The treasure shall be revealed,
+To the one who speaks the words of power.
+
+The path is fraught with danger,
+Yet knowledge lights the way,
+Master the terminal arts,
+And victory shall be yours this day.
+
+Beware the false prophecy,
+For corruption seeks to mislead,
+Trust in the original text,
+And let wisdom be your creed.
+EOF
+
+cat > portal_chamber/masters_tower/comparison_chamber/prophecy_corrupted.txt << 'EOF'
+THE ANCIENT PROPHECY
+
+When the three keys are united,
+And the dragon falls to slumber,
+The treasure shall be concealed,
+To the one who speaks the words of power.
+
+The path is fraught with peril,
+Yet knowledge lights the way,
+Master the terminal arts,
+And victory shall be yours someday.
+
+Beware the false prophecy,
+For corruption seeks to mislead,
+Trust in the original text,
+And let wisdom be your creed.
+EOF
+
+cat > portal_chamber/masters_tower/comparison_chamber/diff_scroll.txt << 'EOF'
+🔍 THE DIFF SCROLL 🔍
+
+⚡ NEW SPELL: diff
+
+Compare two files and show the differences!
+
+Basic usage:
+• diff file1.txt file2.txt
+
+USEFUL FLAGS:
+• diff -u file1 file2     (unified format - easier to read)
+• diff -y file1 file2     (side-by-side comparison)
+• diff -q file1 file2     (quiet - just say if different)
+• diff -r dir1/ dir2/     (compare entire directories!)
+
+TRY IT:
+  diff prophecy_original.txt prophecy_corrupted.txt
+  diff -u prophecy_original.txt prophecy_corrupted.txt
+  diff -y prophecy_original.txt prophecy_corrupted.txt
+
+READING DIFF OUTPUT:
+• < means line is in first file
+• > means line is in second file  
+• Numbers show line positions
+• c = changed, d = deleted, a = added
+
+REAL-WORLD USES:
+  diff old_config.conf new_config.conf
+  diff -u version1.py version2.py > changes.patch
+  git diff (uses diff under the hood!)
+
+POWER COMBO:
+  diff <(sort file1.txt) <(sort file2.txt)
+  (compare sorted versions!)
+
+Find the differences in the prophecies!
+Which one is the true prophecy?
+EOF
+
+cat > portal_chamber/masters_tower/comparison_chamber/challenge.txt << 'EOF'
+⚖️  PROPHECY COMPARISON CHALLENGE ⚖️
+
+Two prophecies have been discovered:
+• prophecy_original.txt
+• prophecy_corrupted.txt
+
+They look almost identical, but the corrupted version
+has been altered by dark magic!
+
+Your mission:
+1. Use diff to find the differences
+2. Identify what was changed
+3. Determine which prophecy is true
+
+Try:
+  diff prophecy_original.txt prophecy_corrupted.txt
+  diff -u prophecy_original.txt prophecy_corrupted.txt
+  diff -y prophecy_original.txt prophecy_corrupted.txt
+
+Can you spot all the changes?
+
+Hint: Look at line 4 and line 7!
+EOF
+
+# ===================
+# BINARY MYSTERIES (strings - already added earlier)
+# ===================
+mkdir -p portal_chamber/masters_tower/binary_mysteries
+
+cat > portal_chamber/masters_tower/binary_mysteries/strings_mastery.txt << 'EOF'
+🔮 MASTERY OF STRING EXTRACTION 🔮
+
+You've already learned the basics of 'strings' in the treasury!
+Now let's go deeper...
+
+ADVANCED OPTIONS:
+• strings -n 5 file      (minimum 5 chars - filter noise)
+• strings -n 10 file     (minimum 10 chars - cleaner output)
+• strings -t x file      (show hex offsets)
+• strings -a file        (scan entire file)
+
+COMBINE WITH OTHER SPELLS:
+• strings binary | grep "password"
+• strings binary | wc -l
+• strings *.bin | sort | uniq
+• strings binary | head -20
+
+REAL-WORLD ANALYSIS:
+Try on system binaries (read-only, safe):
+  strings /bin/ls | grep "version"
+  strings /bin/cat | head -20
+  strings /usr/bin/vim | grep -i "copyright"
+
+You can even analyze compiled programs!
+
+SECURITY APPLICATIONS:
+• Finding hardcoded passwords in binaries
+• Reverse engineering malware
+• Forensics investigation
+• CTF (Capture The Flag) competitions
+• Analyzing unknown file types
+EOF
+
+cat > portal_chamber/masters_tower/binary_mysteries/mystery.bin << 'EOF'
+���BINARY HEADER���
+���MAGIC BYTES: 7F 45 4C 46���
+���compiled executable data���
+
+SECRET_FLAG{you_found_the_hidden_message}
+version_1.2.3_ancient_build
+compiled_date: 2024-12-27
+
+���more binary data���
+DEVELOPER_NOTE: "TODO: Remove this debug code before release"
+HIDDEN_PASSWORD: "WizardMaster2000"
+API_KEY: "sk_live_abc123xyz789"
+
+���compressed section���
+ACHIEVEMENT_UNLOCKED: "Binary Detective"
+MASTER_TITLE: "String Extraction Expert"
+���end of file���
+EOF
+
+cat > portal_chamber/masters_tower/binary_mysteries/challenge.txt << 'EOF'
+🎯 BINARY MYSTERY CHALLENGE 🎯
+
+The file 'mystery.bin' is a corrupted ancient executable.
+
+Your mission:
+1. Extract all readable strings
+2. Find the SECRET_FLAG
+3. Find the HIDDEN_PASSWORD
+4. Find the API_KEY
+5. Discover what was supposed to be removed before release
+
+Commands to try:
+  strings mystery.bin
+  strings mystery.bin | grep "SECRET"
+  strings mystery.bin | grep "PASSWORD"
+  strings mystery.bin | grep "API"
+  strings -n 10 mystery.bin  (longer strings only)
+
+This is how security researchers analyze malware!
+This is how developers find bugs in compiled code!
+This is how hackers discover hidden secrets!
+
+You are now a Binary Wizard! 🔍
+
+BONUS: Try this on real system files (safe to read):
+  strings /bin/bash | grep -i "bash"
+EOF
+
+# ===================
+# TRANSFORMATION WORKSHOP (Tier 3: sed, awk)
+# ===================
+mkdir -p portal_chamber/masters_tower/transformation_workshop
+
+cat > portal_chamber/masters_tower/transformation_workshop/README.txt << 'EOF'
+🔮 THE TRANSFORMATION WORKSHOP 🔮
+
+⚠️  ADVANCED MAGIC AHEAD ⚠️
+
+This chamber contains the most POWERFUL text manipulation spells:
+• sed - Stream EDitor
+• awk - Pattern scanning and processing language
+
+These are programming languages built into your terminal!
+
+Used by system administrators and developers for:
+• Automated text transformations
+• Log processing
+• Data extraction and manipulation
+• Configuration file updates
+
+Warning: These are complex but incredibly powerful!
+Master these and you will be a TRUE Terminal Wizard!
+EOF
+
+cat > portal_chamber/masters_tower/transformation_workshop/sed_scroll.txt << 'EOF'
+✨ THE SED SCROLL ✨
+
+⚡ ADVANCED SPELL: sed (Stream EDitor)
+
+Sed transforms text like magic!
+
+BASIC SUBSTITUTION:
+• sed 's/old/new/' file.txt          (replace first occurrence per line)
+• sed 's/old/new/g' file.txt         (replace all occurrences)
+• sed 's/old/new/gi' file.txt        (case-insensitive)
+
+SAVE CHANGES:
+• sed -i 's/old/new/g' file.txt      (modify file in-place)
+• sed 's/old/new/g' file.txt > new.txt  (save to new file)
+
+DELETE LINES:
+• sed '/pattern/d' file.txt          (delete lines matching pattern)
+• sed '1d' file.txt                  (delete first line)
+• sed '$d' file.txt                  (delete last line)
+
+PRINT SPECIFIC LINES:
+• sed -n '5p' file.txt               (print line 5)
+• sed -n '1,10p' file.txt            (print lines 1-10)
+
+TRY IT:
+  echo "Hello World" | sed 's/World/Universe/'
+  echo "foo bar foo" | sed 's/foo/baz/g'
+
+REAL-WORLD EXAMPLES:
+  sed 's/http:/https:/g' urls.txt
+  sed -i 's/DEBUG/INFO/g' config.txt
+  sed '/^#/d' file.txt               (remove comment lines)
+  sed 's/  */ /g' messy.txt          (collapse multiple spaces)
+
+POWER COMBINATIONS:
+  grep "ERROR" log.txt | sed 's/^/> /' 
+  (add > prefix to error lines)
+
+Sed is like find-and-replace on steroids!
+EOF
+
+cat > portal_chamber/masters_tower/transformation_workshop/awk_scroll.txt << 'EOF'
+⚡ THE AWK SCROLL ⚡
+
+⚡ ADVANCED SPELL: awk
+
+AWK is a full programming language for text processing!
+
+BASIC USAGE:
+• awk '{print}' file.txt             (print all lines)
+• awk '{print $1}' file.txt          (print first column)
+• awk '{print $2}' file.txt          (print second column)
+• awk '{print $1, $3}' file.txt      (print columns 1 and 3)
+
+PATTERN MATCHING:
+• awk '/pattern/ {print}' file.txt   (print lines matching pattern)
+• awk '/ERROR/ {print $0}' log.txt   (print error lines)
+• awk '$3 > 100' data.txt            (print if column 3 > 100)
+
+FIELD SEPARATOR:
+• awk -F',' '{print $1}' file.csv    (use comma as separator)
+• awk -F':' '{print $1}' /etc/passwd (use colon)
+
+CALCULATIONS:
+• awk '{sum += $1} END {print sum}' numbers.txt  (sum first column)
+• awk '{print $1 * $2}' data.txt                 (multiply columns)
+
+TRY IT:
+  echo "apple 5\nbanana 3\ncherry 8" | awk '{print $1}'
+  echo "10 20\n30 40" | awk '{print $1 + $2}'
+
+REAL-WORLD EXAMPLES:
+  ls -l | awk '{print $9, $5}'       (filename and size)
+  awk -F',' '{print $2}' data.csv    (extract 2nd column from CSV)
+  ps aux | awk '{print $1, $11}'     (user and command)
+  awk '/ERROR/ {count++} END {print count}' log.txt  (count errors)
+
+POWER EXAMPLES:
+  # Print lines longer than 80 characters
+  awk 'length > 80' file.txt
+  
+  # Sum all numbers in column 2
+  awk '{sum += $2} END {print "Total:", sum}' data.txt
+  
+  # Print unique values in column 1
+  awk '!seen[$1]++' file.txt
+
+AWK is incredibly powerful for data processing!
+EOF
+
+cat > portal_chamber/masters_tower/transformation_workshop/challenge.txt << 'EOF'
+🎯 TRANSFORMATION CHALLENGE 🎯
+
+Create a test file:
+  echo -e "apple,5,red\nbanana,3,yellow\ncherry,8,red\ndate,2,brown" > fruits.csv
+
+SED CHALLENGES:
+1. Replace all commas with pipes:
+   sed 's/,/|/g' fruits.csv
+
+2. Replace 'red' with 'crimson':
+   sed 's/red/crimson/g' fruits.csv
+
+3. Delete lines containing 'banana':
+   sed '/banana/d' fruits.csv
+
+AWK CHALLENGES:
+1. Print just the fruit names (column 1):
+   awk -F',' '{print $1}' fruits.csv
+
+2. Print fruits with quantity > 3:
+   awk -F',' '$2 > 3 {print $1}' fruits.csv
+
+3. Calculate total quantity:
+   awk -F',' '{sum += $2} END {print "Total:", sum}' fruits.csv
+
+4. Print red fruits only:
+   awk -F',' '/red/ {print $1}' fruits.csv
+
+MASTER CHALLENGE:
+Combine grep, sed, and awk:
+  cat fruits.csv | grep "red" | sed 's/,/ /g' | awk '{print $1, "quantity:", $2}'
+
+You are now a Transformation Master! 🔮
+EOF
+
+cat > portal_chamber/masters_tower/completion_scroll.txt << 'EOF'
+🎓 MASTERS TOWER COMPLETION 🎓
+
+═══════════════════════════════════════════════════════════
+
+Congratulations, Terminal Master!
+
+You have completed ALL chambers of the Masters Tower:
+
+✓ Text Processing Lab
+  • head/tail - File preview
+  • wc - Counting
+  • sort/uniq - Organization and deduplication
+  • cut - Column extraction
+
+✓ Archive Vault
+  • tar - Archiving
+  • gzip/gunzip - Compression
+
+✓ Comparison Chamber
+  • diff - File comparison
+
+✓ Binary Mysteries
+  • strings - Binary text extraction
+
+✓ Transformation Workshop
+  • sed - Stream editing
+  • awk - Pattern processing
+
+You now possess knowledge that many seasoned developers
+have taken YEARS to accumulate!
+
+═══════════════════════════════════════════════════════════
+
+YOUR TERMINAL WIZARD RANK: ⭐⭐⭐⭐⭐ GRANDMASTER+
+
+You are ready for:
+• Professional software development
+• System administration
+• DevOps and automation
+• Security research
+• Data science workflows
+
+═══════════════════════════════════════════════════════════
+
+WHAT'S NEXT?
+
+Continue your journey:
+• Practice daily - use these tools in real work
+• Explore man pages for deeper knowledge
+• Learn shell scripting (bash/zsh)
+• Study regular expressions (regex)
+• Contribute to open source
+• Teach others what you've learned
+
+The terminal is now your playground!
+
+May your commands always execute successfully!
+     -- The Order of Terminal Masters
+
+═══════════════════════════════════════════════════════════
 EOF
 
 # ===================
@@ -1248,40 +2055,49 @@ echo "✨ EPIC Terminal Dungeon created successfully! ✨"
 echo ""
 echo "📚 LEGENDARY DUNGEON INCLUDES:"
 echo "   - 3 Main areas (Library, Armory, Portal Chamber)"
-echo "   - 3 Realms (Ice Castle, Fire Mountain, Sky Tower)"
+echo "   - 3 Basic Realms (Ice Castle, Fire Mountain, Sky Tower)"
+echo "   - 🏰 NEW: Masters Tower (Advanced post-game content)"
 echo "   - 2000+ ancient scrolls to search through!"
-echo "   - 20+ spells to discover progressively"
+echo "   - 35+ commands to discover progressively"
 echo "   - INTERACTIVE dragon boss fight"
 echo "   - Hidden archives (. prefix) with secrets"
-echo "   - Secret ending with hidden realm"
+echo "   - Binary file challenges (strings)"
+echo "   - Cryptography puzzles (base64)"
 echo "   - Text editor training (nano/vim)"
 echo "   - Complete cheat sheet + hints"
 echo ""
 echo "🐉 EPIC FEATURES:"
 echo "   ✓ Dragon validates your incantation!"
-echo "   ✓ 2000 scrolls - grep is ESSENTIAL!"
+echo "   ✓ 2000 scrolls organized in sections/bookshelves"
 echo "   ✓ Hidden .secret_archives (need ls -a)"
+echo "   ✓ Binary artifacts (strings extraction)"
 echo "   ✓ Victory fanfare when you win"
-echo "   ✓ Three special scrolls among thousands"
+echo "   ✓ Three cryptographic keys (base64)"
+echo ""
+echo "🏰 MASTERS TOWER (Post-Game):"
+echo "   ✓ Text Processing Lab (head, tail, wc, sort, uniq, cut)"
+echo "   ✓ Archive Vault (tar, gzip)"
+echo "   ✓ Comparison Chamber (diff)"
+echo "   ✓ Binary Mysteries (strings advanced)"
+echo "   ✓ Transformation Workshop (sed, awk)"
 echo ""
 echo "To begin your epic adventure:"
 echo "  cd terminal_dungeon"
 echo "  cat welcome.txt"
 echo ""
 echo "⚠️  LIBRARY CHALLENGE:"
-echo "    The archives contain 2000 scrolls!"
-echo "    Use 'grep' to find the 3 special ones:"
-echo "    - Dragon's true name"
-echo "    - Gold key location  "
-echo "    - Helpful grep hint"
+echo "    The library has 4 sections with 2000 scrolls in archives!"
+echo "    Use 'grep -r' to search recursively through all sections:"
+echo "    cd library"
+echo "    grep -r 'dragon' ."
 echo ""
 echo "If you get stuck:"
 echo "  cat HINTS.txt"
 echo "  cat CHEAT_SHEET.txt"
 echo ""
-echo "🎮 TIP: Don't try to read all 2000 scrolls manually!"
-echo "    That's what grep is for! Try:"
-echo "    cd library/archives"
-echo "    grep 'SECRET' scroll_*.txt"
+echo "🎮 PROGRESSION:"
+echo "    1. Complete main quest (dragon fight)"
+echo "    2. Unlock Masters Tower for advanced training"
+echo "    3. Master all 35+ terminal commands"
 echo ""
 echo "Good luck, brave adventurer! 🗡️ ⚔️ 🏰 🐉"
