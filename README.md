@@ -37,6 +37,15 @@ Terminal Dungeon transforms your shell into an **interactive RPG** where the fil
 - **Realistic file hierarchy** mirroring real-world project structures
 - **Recursive search challenge** - learn `grep -r` on actual deep structures
 
+### 🎯 Armory Target Range (Grep Training)
+- **Interactive grep practice** - "archery" with pattern matching
+- **Basic targets** - Simple pattern matching exercises
+- **Moving targets** - Multiple files with wildcards
+- **Advanced dummies** - Regex and complex patterns
+- **Accuracy test** - Intelligence report analysis challenge
+- **10 practice dummies** - Real files to search through
+- **Gamified learning** - Grep as a combat skill, not just a command
+
 ### 🔐 Cryptography & Binary Challenges
 - **Base64-encoded keys** scattered throughout the dungeon
 - **Three-part master passphrase** requiring information synthesis
@@ -108,8 +117,10 @@ That's it! Your adventure begins!
 - `cat`, `man`, `less` - Read files and documentation
 
 **Search & Discovery:**
-- `grep`, `grep -r`, `grep -i` - Search within files (recursive!)
+- `grep`, `grep -r`, `grep -i`, `grep -n`, `grep -v`, `grep -c` - Search within files
+- `grep -E`, `grep -A`, `grep -B`, `grep -C` - Advanced pattern matching
 - `find` - Find files by name or type
+- **Target Range Training** - Practice grep precision before tackling 2000 scrolls
 
 **Cryptography & Binary:**
 - `base64`, `base64 -d` - Encode/decode data
@@ -206,8 +217,17 @@ terminal_dungeon/
 │
 ├── ⚔️ armory/
 │   ├── 🗝️ bronze_key.txt (Base64 encoded)
+│   ├── entrance_note.txt
+│   ├── training_master.txt
 │   ├── permission_guide.txt
 │   ├── enchanted_shield.txt
+│   │
+│   ├── 🎯 target_range/              ⭐ GREP TRAINING!
+│   │   ├── README.txt
+│   │   ├── basic_targets.txt
+│   │   ├── advanced_dummies.txt
+│   │   ├── accuracy_test.txt
+│   │   └── moving_targets/ (10 practice dummies)
 │   │
 │   ├── hall_of_echoes/
 │   │   ├── echo_chamber.txt
@@ -312,16 +332,20 @@ Use only the commands mentioned in `welcome.txt`:
 - Navigate manually through deep directory structures
 - Decode keys one at a time, write them down
 - Go back and forth to check hints
-- *Feel the tedium of manual navigation*
+- Attempt to read scrolls one by one
+- *Feel the tedium of manual work*
 
-**Phase 2: The Discovery (Spell Forge)**
-- Find the armory spell forge
-- Learn about aliases and environment variables
+**Phase 2: Training & Discovery**
+- **Visit the Target Range** - Practice grep as "archery"
+- Learn pattern matching through combat training
+- Hit targets with increasing difficulty
+- Master wildcards and regex basics
+- Find the Spell Forge - discover aliases and variables
 - Experience the "aha!" moment
-- Set up your environment for efficiency
 
 **Phase 3: The Mastery (Main Quest Complete)**
 - Use `grep -r` to search 2000 scrolls instantly
+- Apply target range skills to real library search
 - Store decoded keys as variables
 - Extract secrets from binary files with `strings`
 - Navigate like a pro
@@ -367,6 +391,15 @@ strings armory/treasury/dragon_lair/cursed_scroll.bin
 **📚 The Archive Search (2000 Scrolls)**
 The library contains 2000 scrolls across 10 bookshelves in multiple sections. **Don't read them manually!**
 
+**Pro tip**: Train at the armory target range first!
+```bash
+cd armory/target_range
+cat README.txt
+# Complete the training exercises
+# Then apply your skills to the library
+```
+
+Search the library:
 ```bash
 cd library
 # Search recursively through ALL sections and shelves
