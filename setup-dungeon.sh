@@ -2331,6 +2331,13 @@ PROCESSES:
 • <cmd> &        Run in background
 • jobs           Show background jobs
 • fg             Bring to foreground
+• sleep <n>      Wait n seconds
+• (sleep 5 && cmd) &  Schedule command for later
+
+SCHEDULING:
+• (sleep 10 && echo "Done!") &    Delayed execution
+• jobs                             View scheduled tasks
+• crontab -l                       View recurring tasks (advanced)
 
 NETWORK:
 • ping <host>    Check connection
