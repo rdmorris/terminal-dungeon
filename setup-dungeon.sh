@@ -433,6 +433,295 @@ Notice the letters at the start of each line?
 Those are PERMISSIONS - who can read/write/execute files.
 EOF
 
+# ===================
+# ARMORY - Permissions and wildcards
+# ===================
+mkdir -p armory
+
+cat > armory/entrance_note.txt << 'EOF'
+⚔️  THE ARMORY ⚔️
+
+Weapons, shields, and armor fill this chamber.
+Training dummies line the walls.
+
+The master-at-arms approaches...
+Try: cat training_master.txt
+EOF
+
+cat > armory/training_master.txt << 'EOF'
+🎯 THE MASTER-AT-ARMS 🎯
+
+"Welcome to the armory, young warrior!
+
+Before you can face the dragon, you must TRAIN!
+
+I see you've learned to search scrolls in the library with grep.
+But can you HIT A TARGET with it?
+
+Visit the target_range to practice your grep skills!
+Real warriors need precision - grep is your bow and arrow.
+
+TRAINING AREAS:
+• target_range (grep practice)
+• hall_of_echoes (echo and redirection)
+• spell_forge (aliases and variables)
+
+Once you've mastered all training, you may proceed to the treasury.
+
+The bronze_key.txt is yours for the taking when you're ready.
+But first... TRAIN!"
+EOF
+
+# ===================
+# TARGET RANGE - Grep Training
+# ===================
+mkdir -p armory/target_range
+
+cat > armory/target_range/README.txt << 'EOF'
+🎯 THE TARGET RANGE 🎯
+
+Welcome to archery training!
+
+Your weapon: GREP
+Your targets: Practice dummies scattered around the range
+
+Each dummy has information written on it.
+Use grep to "hit" specific targets by searching for patterns!
+
+TRAINING EXERCISES:
+1. basic_targets.txt - Simple pattern matching
+2. moving_targets/ - Multiple files (wildcards)
+3. advanced_dummies.txt - Complex patterns
+4. accuracy_test.txt - Final exam
+
+The master-at-arms is watching your performance!
+EOF
+
+cat > armory/target_range/basic_targets.txt << 'EOF'
+🎯 BASIC TARGET PRACTICE 🎯
+
+⚡ GREP BASICS REVIEW:
+
+Grep searches for patterns in files.
+Think of it like shooting arrows at specific targets!
+
+COMMANDS TO PRACTICE:
+• grep "word" file.txt       (find "word" in file)
+• grep -i "word" file.txt    (case-insensitive - hits WORD, Word, word)
+• grep -n "word" file.txt    (show line numbers - see where you hit)
+• grep -v "word" file.txt    (inverse - hit everything EXCEPT this)
+• grep -c "word" file.txt    (count hits)
+
+CHALLENGE: Search this very file!
+
+Try these:
+  grep "TARGET" basic_targets.txt
+  grep -i "challenge" basic_targets.txt
+  grep -n "grep" basic_targets.txt
+  grep -c "PRACTICE" basic_targets.txt
+
+How many times does "grep" appear? Use: grep -c "grep" basic_targets.txt
+
+TARGET_1: If you can read this, you hit the first target! 🎯
+TARGET_2: Second target acquired! Well done! 🎯
+TARGET_3: Three for three! You're getting good! 🎯
+TARGET_4: BULLSEYE! Perfect shot! 🎯🎯🎯
+
+Practice makes perfect, warrior!
+EOF
+
+# Create moving targets (multiple files)
+mkdir -p armory/target_range/moving_targets
+
+cat > armory/target_range/moving_targets/README.txt << 'EOF'
+🏃 MOVING TARGETS 🏃
+
+These targets are MOVING (multiple files)!
+You need to hit them all at once using wildcards!
+
+There are 10 dummy files here. Each has different markings.
+Some have HIT markers, some have MISS markers.
+
+WILDCARD GREP:
+• grep "pattern" *.txt           (search all .txt files)
+• grep "pattern" dummy_*.txt     (search files matching pattern)
+• grep -l "pattern" *.txt        (show only filenames with matches)
+• grep -h "pattern" *.txt        (hide filenames, show just matches)
+
+TRY THIS:
+  grep "HIT" *.txt                (find all hits)
+  grep -c "HIT" *.txt             (count hits per file)
+  grep -l "CRITICAL" *.txt        (which dummies have critical hits?)
+
+ADVANCED:
+  grep "HIT" *.txt | wc -l        (total number of hits across all dummies!)
+EOF
+
+# Create 10 practice dummies
+for i in {1..10}; do
+  hits=$((RANDOM % 5 + 1))
+  misses=$((RANDOM % 3))
+  
+  cat > armory/target_range/moving_targets/dummy_$(printf "%02d" $i).txt << EOF
+Training Dummy #$(printf "%02d" $i)
+Status: Active
+Difficulty: Level $((i % 3 + 1))
+
+SHOT RECORD:
+EOF
+  
+  for h in $(seq 1 $hits); do
+    if [ $((RANDOM % 10)) -gt 7 ]; then
+      echo "CRITICAL HIT! Perfect accuracy!" >> armory/target_range/moving_targets/dummy_$(printf "%02d" $i).txt
+    else
+      echo "HIT - Good shot!" >> armory/target_range/moving_targets/dummy_$(printf "%02d" $i).txt
+    fi
+  done
+  
+  for m in $(seq 1 $misses); do
+    echo "MISS - Try again!" >> armory/target_range/moving_targets/dummy_$(printf "%02d" $i).txt
+  done
+  
+  echo "" >> armory/target_range/moving_targets/dummy_$(printf "%02d" $i).txt
+  echo "Arrows fired: $((hits + misses))" >> armory/target_range/moving_targets/dummy_$(printf "%02d" $i).txt
+  echo "Accuracy: $((hits * 100 / (hits + misses)))%" >> armory/target_range/moving_targets/dummy_$(printf "%02d" $i).txt
+done
+
+cat > armory/target_range/advanced_dummies.txt << 'EOF'
+🎯 ADVANCED TARGET PRACTICE 🎯
+
+⚡ ADVANCED GREP TECHNIQUES:
+
+Now we train with complex patterns!
+
+REGEX BASICS:
+• grep "^word"       (line starts with "word")
+• grep "word$"       (line ends with "word")
+• grep "word.*hit"   (word followed by hit anywhere after)
+• grep "[0-9]"       (any digit)
+• grep "[A-Z]"       (any uppercase letter)
+
+USEFUL FLAGS:
+• grep -E "word1|word2"  (match word1 OR word2)
+• grep -A 2 "word"       (show 2 lines AFTER match)
+• grep -B 2 "word"       (show 2 lines BEFORE match)
+• grep -C 2 "word"       (show 2 lines of CONTEXT)
+
+PRACTICE TARGETS:
+
+ALPHA_TARGET: This target starts with ALPHA
+BRAVO_TARGET: Second target designation
+TARGET_CHARLIE: Third in sequence
+DELTA_TARGET: Fourth target acquired
+TARGET_ECHO_FINAL: Last target standing
+
+Hidden: TARGET_WHISKEY (secret target)
+Classified: OMEGA_TARGET (top secret)
+
+Score_001: 95 points
+Score_002: 87 points  
+Score_003: 92 points
+Score_004: 78 points
+Score_005: 100 points - PERFECT SCORE!
+
+CHALLENGES:
+
+1. Find all lines that START with "ALPHA":
+   grep "^ALPHA" advanced_dummies.txt
+
+2. Find all lines that END with "TARGET":
+   grep "TARGET$" advanced_dummies.txt
+
+3. Find all scores:
+   grep "Score_" advanced_dummies.txt
+
+4. Find scores above 90 (hint: look for 9 or 100):
+   grep -E "9[0-9]|100" advanced_dummies.txt
+
+5. Find targets with context (see what's around them):
+   grep -C 1 "secret" advanced_dummies.txt
+
+Master these techniques and you'll be a grep sniper! 🎯
+EOF
+
+cat > armory/target_range/accuracy_test.txt << 'EOF'
+🏆 FINAL ACCURACY TEST 🏆
+
+Time to prove your grep mastery!
+
+SCENARIO: Intelligence Report Analysis
+
+You've intercepted enemy communications. Use grep to extract intelligence!
+
+═══════════════════════════════════════════════════════════
+TRANSMISSION LOG - CLASSIFIED
+═══════════════════════════════════════════════════════════
+
+[2024-12-27 10:30] AGENT_ALPHA: Mission status: ACTIVE
+[2024-12-27 10:35] AGENT_BRAVO: Target located at coordinates 45.2, -122.7
+[2024-12-27 10:40] AGENT_ALPHA: Proceeding to extraction point
+[2024-12-27 10:45] COMMAND: Mission status: ACTIVE - all agents respond
+[2024-12-27 10:50] AGENT_CHARLIE: STATUS: COMPROMISED - need immediate evac!
+[2024-12-27 10:55] AGENT_BRAVO: Mission status: COMPLETE
+[2024-12-27 11:00] COMMAND: CRITICAL: Dragon guard rotates at midnight
+[2024-12-27 11:05] AGENT_DELTA: Obtained BRONZE_KEY location: armory main chamber
+[2024-12-27 11:10] AGENT_ALPHA: Mission status: COMPLETE
+[2024-12-27 11:15] COMMAND: All agents RTB (return to base)
+[2024-12-27 11:20] AGENT_CHARLIE: STATUS: SAFE - extraction successful
+[2024-12-27 11:25] COMMAND: CRITICAL: Treasury vulnerable during guard rotation
+[2024-12-27 11:30] AGENT_BRAVO: Intel confirmed: Dragon's true name in library archives
+[2024-12-27 11:35] COMMAND: Mission summary: SUCCESS - all objectives met
+
+END TRANSMISSION
+═══════════════════════════════════════════════════════════
+
+YOUR MISSION:
+
+1. Count total transmissions:
+   grep -c "\[2024" accuracy_test.txt
+
+2. Find all CRITICAL messages:
+   grep "CRITICAL" accuracy_test.txt
+
+3. List all agent status updates:
+   grep "status:" accuracy_test.txt
+
+4. Find compromised agents:
+   grep "COMPROMISED" accuracy_test.txt
+
+5. Extract dragon-related intel:
+   grep -i "dragon" accuracy_test.txt
+
+6. Find all COMMAND transmissions:
+   grep "COMMAND:" accuracy_test.txt
+
+7. Get count of active missions:
+   grep -c "ACTIVE" accuracy_test.txt
+
+8. Find who found the key:
+   grep "KEY" accuracy_test.txt
+
+9. Extract just the timestamps of CRITICAL messages:
+   grep "CRITICAL" accuracy_test.txt | grep -o "\[.*\]"
+
+10. ADVANCED: Find all successful completions with context:
+    grep -C 1 "COMPLETE" accuracy_test.txt
+
+═══════════════════════════════════════════════════════════
+
+EVALUATION:
+
+If you completed all 10 challenges, you are now a GREP MASTER! 🏆
+
+The master-at-arms nods with approval.
+"You've proven yourself worthy. The bronze key awaits!"
+
+Grep is one of the most powerful tools in your arsenal.
+Use it wisely in the battles ahead!
+
+═══════════════════════════════════════════════════════════
+EOF
+
 cat > armory/bronze_key.txt << 'EOF'
 🗝️  THE BRONZE KEY! 🗝️
 
@@ -496,9 +785,9 @@ EOF
 cat > armory/enchanted_shield.txt << 'EOF'
 🛡️  ENCHANTED SHIELD 🛡️
 
-This shield bears ancient runes teaching PATTERN MAGIC!
+This shield is inscribed with powerful runes teaching PATTERN MAGIC!
 
-⚡ NEW SPELL: Wildcards
+⚡ SPELL: Wildcards
 
 Wildcards let you work with multiple files at once:
 • *        = matches anything
@@ -509,6 +798,13 @@ Try these:
 • ls *.txt              (all text files)
 • cat weapon_?.txt      (weapon_1.txt, weapon_2.txt, etc)
 • ls [a-z]*            (files starting with lowercase letters)
+
+Combined with GREP (target practice skills):
+• grep "HIT" *.txt      (search all text files for "HIT")
+• grep "pattern" target_range/*.txt
+
+You learned grep precision in the target range.
+Now combine it with wildcards for maximum power!
 
 Use 'man bash' and search for 'Pattern Matching' to learn more!
 EOF
