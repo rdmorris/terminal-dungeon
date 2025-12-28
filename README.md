@@ -140,6 +140,9 @@ That's it! Your adventure begins!
 **Process Management:**
 - `ps`, `top` - View processes
 - `kill`, `jobs`, `bg`, `fg`, `&` - Control processes
+- `sleep` - Delay execution
+- **Scheduled summoning** - Combine `sleep` + `&&` + `&` for delayed tasks
+- `crontab -l` - View recurring scheduled tasks (theoretical)
 
 **Network:**
 - `ping`, `curl`, `wget` - Network operations
@@ -266,7 +269,8 @@ terminal_dungeon/
 │   │
 │   ├── 🔥 fire_mountain/
 │   │   ├── realm_entrance.txt
-│   │   └── daemon_scroll.txt
+│   │   ├── daemon_scroll.txt
+│   │   └── scheduling_scroll.txt ⏰ Schedule delayed tasks!
 │   │
 │   ├── ☁️ sky_tower/
 │   │   ├── realm_entrance.txt
