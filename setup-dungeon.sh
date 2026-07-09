@@ -1,19 +1,37 @@
 #!/bin/bash
 
 # Terminal Dungeon - An Interactive Bash Learning Adventure
-# https://github.com/YOUR_USERNAME/terminal-dungeon
-# 
+# https://github.com/rdmorris/terminal-dungeon
+#
 # This script creates a filesystem-based dungeon where players learn
 # terminal commands through exploration and puzzle-solving.
 #
 # Usage: ./setup-dungeon.sh
 # Then: cd terminal_dungeon && cat welcome.txt
 
+# If a dungeon already exists, offer to rebuild it.
+# (Some areas are locked with chmod 000, so we must unlock before removing.)
+if [ -d terminal_dungeon ]; then
+  echo "⚠️  A terminal_dungeon already exists here."
+  read -r -p "Tear it down and rebuild from scratch? [y/N] " answer
+  case "$answer" in
+    [yY]*)
+      chmod -R u+rwx terminal_dungeon 2>/dev/null
+      rm -rf terminal_dungeon
+      echo "🧹 Old dungeon cleared."
+      ;;
+    *)
+      echo "Keeping the existing dungeon. Enter it with: cd terminal_dungeon"
+      exit 0
+      ;;
+  esac
+fi
+
 echo "🏰 Creating the EPIC Terminal Dungeon..."
 
 # Create the dungeon root
 mkdir -p terminal_dungeon
-cd terminal_dungeon
+cd terminal_dungeon || exit 1
 
 # Entrance
 cat > welcome.txt << 'EOF'
@@ -42,6 +60,11 @@ Current location has these areas to explore:
 
 To read them, you must navigate back here and use cat:
   cat HINTS.txt
+
+✨ OPTIONAL MAGIC - THE LIVING DUNGEON ✨
+Want rooms that REACT when you walk in, and a quest log
+that updates itself? Cast this spell (note: source, not ./):
+  source enter_dungeon.sh
 
 Start your adventure: Try "ls" to see what's here!
 EOF
@@ -83,7 +106,7 @@ DECODING THE KEYS:
 All three keys are Base64 encoded! To decode them:
 
 Example for silver key:
-  grep "BEGIN SILVER" -A 2 library/silver_key.txt | grep -v "BEGIN\|END" | base64 -d
+  grep -m 1 "BEGIN SILVER" -A 2 library/silver_key.txt | grep -v "BEGIN\|END" | base64 -d
 
 Or simpler:
   echo "U2lsdmVyS2V5..." | base64 -d
@@ -92,23 +115,25 @@ Do this for all three keys and write down what they say!
 
 UNLOCKING THE TREASURY:
 1. Decode all three keys
-2. Each reveals part of the master passphrase
-3. Combine the three parts (e.g., "Arcane" + "Wisdom" + "Power")
-4. Decode the encrypted_passphrase.txt file
-5. Run ./unlock_treasury.sh with the decoded treasury code
+2. Each reveals one WORD of the master passphrase
+3. Decode armory/treasury/encrypted_passphrase.txt the same way
+   (it tells you what ORDER to speak the words in)
+4. Run ./unlock_treasury.sh (from inside armory/treasury)
+5. Speak the three words when asked
 
 To decode encrypted_passphrase.txt:
-  cat armory/treasury/encrypted_passphrase.txt | grep '^V2' | base64 -d
+  grep -m 1 "BEGIN VAULT" -A 3 armory/treasury/encrypted_passphrase.txt | grep -v "BEGIN\|END" | base64 -d
 
 THE LIBRARY ARCHIVES CHALLENGE:
-The archives contain 2000 scrolls! Don't read them manually!
+The archives hold 2000 scrolls across 10 bookshelves!
+Don't read them manually - and don't search shelf by shelf!
 
-Use GREP to search:
+Use RECURSIVE grep to search every shelf at once:
 • cd library/archives
-• grep "SECRET" scroll_*.txt
-• grep "dragon" scroll_*.txt  
-• grep "GOLD_KEY" scroll_*.txt
-• grep "Ignis" scroll_*.txt
+• grep -r "SECRET" .
+• grep -r "dragon" .
+• grep -r "GOLD_KEY" .
+• grep -r "Ignis" .
 
 You need to find THREE special scrolls:
 1. One mentions the dragon's TRUE NAME
@@ -122,10 +147,17 @@ Once you find where it is, you need to SEE hidden directories:
 • Look for directories starting with '.'
 • cd .secret_archives
 
+THE SEALED ARTIFACT (BINARY FILE):
+armory/treasury/sealed_artifact.bin is not a text file!
+'cat' will print garbage. Use the strings spell instead:
+  strings sealed_artifact.bin
+  strings sealed_artifact.bin | grep FRAGMENT
+
 DRAGON TIPS:
-• Read library/dragon_lore.txt for the sleep spell
+• Read library/dragon_lore/sleep_spells.txt for the sleep spell
 • The dragon has an encrypted riddle - decode it with base64
-• Use grep in archives to find the dragon's TRUE NAME
+• Read the cursed_scroll.bin in the lair with: strings cursed_scroll.bin
+• Use grep -r in library/archives to find the dragon's TRUE NAME
 • Run ./sleep_dragon.sh in the dragon_lair
 • Speak BOTH parts together in one line
 
@@ -212,12 +244,12 @@ To decode this key:
   echo "U2lsdmVyK..." | base64 -d
 
 Or extract and decode in one command:
-  grep "BEGIN SILVER" -A 2 silver_key.txt | grep -v "BEGIN\|END" | base64 -d
+  grep -m 1 "BEGIN SILVER" -A 2 silver_key.txt | grep -v "BEGIN\|END" | base64 -d
 
 💡 PRO TIP: Save decoded keys as ENVIRONMENT VARIABLES!
 
 Try this:
-  export SILVER_KEY=$(grep "BEGIN SILVER" -A 2 silver_key.txt | grep -v "BEGIN\|END" | base64 -d)
+  export SILVER_KEY=$(grep -m 1 "BEGIN SILVER" -A 2 silver_key.txt | grep -v "BEGIN\|END" | base64 -d)
   echo $SILVER_KEY
 
 Now you can access this key from anywhere in the dungeon!
@@ -227,18 +259,43 @@ Do this for all three keys, then combine them:
   export MASTER_PASS="${SILVER_KEY}${GOLD_KEY}${BRONZE_KEY}"
 EOF
 
-# Create the archives directory with THOUSANDS of scrolls
-mkdir -p library/archives
+# Create the archives: 10 bookshelves, 200 scrolls each (2000 total!)
+echo "Creating 2000 ancient scrolls across 10 bookshelves (10-30 seconds)..."
 
-echo "Creating thousands of ancient scrolls in the library archives..."
+weather=("Sunny" "Cloudy" "Rainy" "Stormy" "Foggy" "Clear")
+event=("harvest festival" "royal decree" "merchant caravan arrived" "nothing of note" "village celebration" "eclipse observed")
+
+for s in {1..10}; do
+  mkdir -p "library/archives/shelf_$(printf "%02d" $s)"
+done
+
+cat > library/archives/README.txt << 'EOF'
+📚 THE GREAT ARCHIVES 📚
+
+Ten towering bookshelves stretch into the darkness.
+Each shelf holds 200 scrolls. That's 2000 scrolls in all!
+
+The scrolls are sorted by year:
+  shelf_01: years 1001-1200
+  shelf_02: years 1201-1400
+  ... and so on, up to shelf_10.
+
+You could read them one by one. It would only take a few weeks.
+
+Or... a wise wizard once carved a tip into shelf_01.
+Perhaps start there? (Hint: grep is mightier than the eye.)
+
+To search EVERY shelf at once, grep has a secret power:
+  grep -r "word" .
+The -r means RECURSIVE: search this room and every room inside it!
+EOF
 
 # Create 2000 scrolls with random historical content
 for i in {1..2000}; do
   year=$((1000 + i))
-  weather=("Sunny" "Cloudy" "Rainy" "Stormy" "Foggy" "Clear")
-  event=("harvest festival" "royal decree" "merchant caravan arrived" "nothing of note" "village celebration" "eclipse observed")
-  
-  cat > library/archives/scroll_$(printf "%04d" $i).txt << EOF
+  shelf=$(printf "%02d" $(( (i - 1) / 200 + 1 )))
+
+  cat > "library/archives/shelf_${shelf}/scroll_$(printf "%04d" $i).txt" << EOF
 Ancient Scroll #$(printf "%04d" $i)
 
 Year: $year
@@ -249,7 +306,7 @@ EOF
 done
 
 # Hide the THREE important scrolls with clues among the 2000!
-cat > library/archives/scroll_0666.txt << 'EOF'
+cat > library/archives/shelf_04/scroll_0666.txt << 'EOF'
 Ancient Scroll #0666
 
 Year: 1666
@@ -264,7 +321,7 @@ Only by speaking its name can one hope to command it."
 I have recorded this in case it proves useful to future adventurers.
 EOF
 
-cat > library/archives/scroll_1313.txt << 'EOF'
+cat > library/archives/shelf_07/scroll_1313.txt << 'EOF'
 Ancient Scroll #1313
 
 Year: 2313
@@ -282,7 +339,7 @@ Only those who know the spell to reveal invisible things can find them.
 Hint: Use 'ls -a' to see ALL things, even those that start with a dot.
 EOF
 
-cat > library/archives/scroll_0042.txt << 'EOF'
+cat > library/archives/shelf_01/scroll_0042.txt << 'EOF'
 Ancient Scroll #0042
 
 Year: 1042
@@ -293,13 +350,18 @@ Status: Philosophical
 A wizard asked: "How many scrolls must one read to find truth?"
 The answer, as always, is 42.
 
-But seriously, there are thousands of scrolls here.
-Reading them all with 'cat scroll_*.txt' would take forever!
+But seriously, there are 10 shelves and 2000 scrolls here.
+Reading them all with 'cat' would take forever!
+Even searching one shelf at a time would take ages!
 
-Wise wizards use GREP to search for specific words:
-  grep "SECRET" scroll_*.txt
-  grep "GOLD_KEY" scroll_*.txt
-  grep -i "dragon" scroll_*.txt
+Wise wizards use GREP with the -r (RECURSIVE) power to
+search EVERY shelf at once. From the archives directory:
+  grep -r "SECRET" .
+  grep -r "GOLD_KEY" .
+  grep -ri "dragon" .
+
+(The . means "start here". The -r means "and search every
+directory inside, and every directory inside those...")
 
 Work smarter, not harder!
 EOF
@@ -321,20 +383,197 @@ THREE special scrolls containing vital information:
 2. The location of the GOLD_KEY  
 3. A helpful hint about using grep itself
 
+Basic grep searches inside files you name:
+• grep "dragon" README.txt
+• grep "dragon" *.txt            (all .txt files in this room)
+• grep -n "dragon" *.txt         (shows line numbers)
+• grep -i "secret" *.txt         (ignores case)
+
+BUT the archives have 10 bookshelves, each a separate room!
+Searching them one at a time is torture. There is a better way...
+
+⚡ RECURSIVE SEARCH: grep -r
+
 Try these commands:
 • cd archives
-• grep "SECRET" scroll_*.txt
-• grep "dragon" scroll_*.txt
-• grep "GOLD_KEY" scroll_*.txt
-• grep -n "dragon" scroll_*.txt  (shows line numbers)
-• grep -i "secret" scroll_*.txt  (ignores case)
+• grep -r "SECRET" .
+• grep -r "dragon" .
+• grep -r "GOLD_KEY" .
+
+The -r searches EVERY shelf at once. The . means "start here".
 
 Use 'man grep' to learn more!
 
 POWER TIP: You can search from the library directory too:
-  grep "SECRET" archives/scroll_*.txt
+  grep -r "SECRET" archives/
 
 Find those three special scrolls! Your quest depends on it!"
+EOF
+
+# ===================
+# LIBRARY SECTIONS - Dragon Lore, Reference, Magical Arts
+# ===================
+
+# --- DRAGON LORE (contains the sleep spell - REQUIRED to win!) ---
+mkdir -p library/dragon_lore
+
+cat > library/dragon_lore/README.txt << 'EOF'
+🐉 THE DRAGON LORE SECTION 🐉
+
+Dusty tomes about dragons fill these shelves.
+Two books catch your eye:
+
+• sleep_spells.txt   - Spells to subdue great beasts
+• dragon_species.txt - A bestiary of known dragons
+
+Any wizard planning to face a dragon should read BOTH.
+EOF
+
+cat > library/dragon_lore/sleep_spells.txt << 'EOF'
+💤 THE BOOK OF SLEEP SPELLS 💤
+
+"To subdue a dragon, one does not need a sword.
+One needs the right WORDS."
+
+THE DRAGON SLEEP SPELL (old tongue):
+
+    somnum draconis
+
+⚠️  IMPORTANT: The spell alone is NOT enough!
+
+Ancient wizards discovered that a dragon only obeys
+if you also speak its TRUE NAME in the same breath.
+
+Example incantation format:
+    <sleep spell> <true name>
+
+Every dragon's true name is different. This dragon's name
+was recorded long ago, somewhere in the 2000 scrolls of
+the library archives...
+
+(Hint: grep -r is your friend. Try searching for "true name".)
+
+WRITE THE SPELL DOWN. You will need it at the dragon's lair!
+EOF
+
+cat > library/dragon_lore/dragon_species.txt << 'EOF'
+📖 BESTIARY: KNOWN DRAGON SPECIES 📖
+
+• Frost Wyrm     - breathes ice, fears fire
+• Storm Drake    - rides thunderclouds
+• FIRE DRAGON    - breathes flame, hoards treasure  ← THIS ONE!
+
+The dragon in this dungeon is a FIRE DRAGON.
+
+Fire dragons are proud creatures. They cannot resist
+responding when addressed by their TRUE NAME.
+
+Their names in the old tongue often begin with "Ignis"
+(the ancient word for FIRE).
+
+A useful search, perhaps? grep -r "Ignis" ../archives/
+EOF
+
+# --- REFERENCE SECTION (tutorials & guides) ---
+mkdir -p library/reference
+
+cat > library/reference/README.txt << 'EOF'
+📕 THE REFERENCE SECTION 📕
+
+Guides written by wizards of old:
+
+• grep_guide.txt   - The art of searching
+• find_guide.txt   - The art of locating files
+• base64_guide.txt - The art of decoding secrets
+
+Read whichever you need. Knowledge is power!
+EOF
+
+cat > library/reference/grep_guide.txt << 'EOF'
+🔍 THE COMPLETE GREP GUIDE 🔍
+
+grep searches for TEXT inside files.
+
+BASICS:
+  grep "word" file.txt          search one file
+  grep "word" *.txt             search all .txt files here
+  grep -r "word" .              search here AND all rooms inside (RECURSIVE!)
+
+USEFUL POWERS:
+  grep -i "word" file.txt       ignore UPPER/lower case
+  grep -n "word" file.txt       show line numbers
+  grep -c "word" file.txt       just COUNT the matches
+  grep -v "word" file.txt       show lines WITHOUT the word (inVert)
+
+CONTEXT POWERS (see what's around a match):
+  grep -A 2 "word" file.txt     show 2 lines After each match
+  grep -B 2 "word" file.txt     show 2 lines Before
+  grep -C 2 "word" file.txt     show 2 lines of Context (both sides)
+
+Practice at the armory target_range!
+EOF
+
+cat > library/reference/find_guide.txt << 'EOF'
+🗺️  THE FIND GUIDE 🗺️
+
+grep searches INSIDE files. find searches for the files THEMSELVES.
+
+  find . -name "*.txt"          find all .txt files from here down
+  find . -name "scroll_0666*"   find a file when you know its name
+  find . -type d                find only directories
+  find . -name "*.bin"          find binary artifacts...
+
+grep finds words. find finds files. Together, unstoppable!
+EOF
+
+cat > library/reference/base64_guide.txt << 'EOF'
+🔐 THE BASE64 GUIDE 🔐
+
+Base64 is a way to ENCODE text so it looks like gibberish.
+It is not true encryption - anyone who knows the spell can decode it!
+
+DECODE:
+  echo "SGVsbG8h" | base64 -d
+
+ENCODE (make your own secrets):
+  echo "Hello!" | base64
+
+DECODE A KEY FILE (like the ones in this dungeon):
+  grep -m 1 "BEGIN" -A 2 key.txt | grep -v "BEGIN\|END" | base64 -d
+
+That long command means:
+  1. grep -m 1 "BEGIN" -A 2   find the FIRST BEGIN line + 2 lines After it
+                              (-m 1 means "stop after 1 match")
+  2. grep -v "BEGIN\|END"     remove the BEGIN and END marker lines
+  3. base64 -d                decode what remains!
+
+The | symbol is a PIPE: it feeds one spell's output into the next.
+EOF
+
+# --- MAGICAL ARTS SECTION ---
+mkdir -p library/magical_arts/enchantments
+
+cat > library/magical_arts/README.txt << 'EOF'
+✨ THE MAGICAL ARTS SECTION ✨
+
+Enchantments and word-magic. Explore the enchantments room!
+EOF
+
+cat > library/magical_arts/enchantments/echo_magic.txt << 'EOF'
+🗣️  ECHO MAGIC 🗣️
+
+⚡ NEW SPELL: echo
+
+echo makes the terminal SPEAK:
+  echo "Hello, dungeon!"
+
+Echo can reveal the contents of magical variables:
+  echo $HOME
+  echo $SILVER_KEY     (if you've stored a key!)
+
+And echo is how you will SPEAK to the dragon...
+When the time comes, you must speak the full incantation
+in one breath. Practice your echo!
 EOF
 
 # Create the HIDDEN secret archives (starts with .)
@@ -357,7 +596,7 @@ ZTogIldpc2RvbSIK
 "You've mastered both grep AND the art of seeing hidden things!
 
 Decode this key the same way you decoded the silver key:
-  grep "BEGIN GOLD" -A 2 gold_key.txt | grep -v "BEGIN\|END" | base64 -d
+  grep -m 1 "BEGIN GOLD" -A 2 gold_key.txt | grep -v "BEGIN\|END" | base64 -d
 
 WRITE DOWN this decoded part too! Keep track of all three parts.
 You're getting quite deep in the dungeon now...
@@ -425,24 +664,15 @@ cat > armory/entrance_note.txt << 'EOF'
 ⚔️  THE ARMORY ⚔️
 
 Weapons, shields, and armor fill this chamber.
+Training dummies line the walls.
+
 But something is strange... some items seem locked.
 
 Try: ls -l
 
 Notice the letters at the start of each line?
 Those are PERMISSIONS - who can read/write/execute files.
-EOF
-
-# ===================
-# ARMORY - Permissions and wildcards
-# ===================
-mkdir -p armory
-
-cat > armory/entrance_note.txt << 'EOF'
-⚔️  THE ARMORY ⚔️
-
-Weapons, shields, and armor fill this chamber.
-Training dummies line the walls.
+(One scroll here is locked tight. permission_guide.txt explains how to open it.)
 
 The master-at-arms approaches...
 Try: cat training_master.txt
@@ -736,7 +966,7 @@ ciBwYXNzcGhyYXNlOiAiUG93ZXIiCg==
 -----END BRONZE KEY-----
 
 All three keys are yours! Decode this one too:
-  grep "BEGIN BRONZE" -A 2 bronze_key.txt | grep -v "BEGIN\|END" | base64 -d
+  grep -m 1 "BEGIN BRONZE" -A 2 bronze_key.txt | grep -v "BEGIN\|END" | base64 -d
 
 Now combine all three decoded parts to form the MASTER PASSPHRASE!
 
@@ -949,13 +1179,13 @@ FOR YOUR KEY QUEST
 Stop re-decoding keys! Save them once:
 
 From the silver_key.txt location:
-  export SILVER_KEY=$(grep "BEGIN SILVER" -A 2 silver_key.txt | grep -v "BEGIN\|END" | base64 -d)
+  export SILVER_KEY=$(grep -m 1 "BEGIN SILVER" -A 2 silver_key.txt | grep -v "BEGIN\|END" | base64 -d)
 
 From the gold_key.txt location:
-  export GOLD_KEY=$(grep "BEGIN GOLD" -A 2 gold_key.txt | grep -v "BEGIN\|END" | base64 -d)
+  export GOLD_KEY=$(grep -m 1 "BEGIN GOLD" -A 2 gold_key.txt | grep -v "BEGIN\|END" | base64 -d)
 
 From the bronze_key.txt location:
-  export BRONZE_KEY=$(grep "BEGIN BRONZE" -A 2 bronze_key.txt | grep -v "BEGIN\|END" | base64 -d)
+  export BRONZE_KEY=$(grep -m 1 "BEGIN BRONZE" -A 2 bronze_key.txt | grep -v "BEGIN\|END" | base64 -d)
 
 Check them anytime:
   echo $SILVER_KEY
@@ -1168,6 +1398,29 @@ This is powerful for:
 • Running servers
 • Long-running scripts
 • Batch processing
+EOF
+
+cat > portal_chamber/fire_mountain/scheduling_scroll.txt << 'EOF'
+⏰ THE SCROLL OF SCHEDULING ⏰
+
+⚡ NEW SPELLS: sleep, && and &
+
+Combine three small spells to schedule a task for LATER:
+
+  (sleep 10 && echo "⏰ The volcano rumbles!") &
+
+Breaking the spell apart:
+• sleep 10        wait 10 seconds
+• &&              THEN do the next thing (only if sleep worked)
+• ( ... ) &       run the whole thing in the BACKGROUND
+
+Try it! You can keep exploring while it counts down.
+Check on it with: jobs
+
+FOR THE FUTURE (advanced):
+Real wizards schedule RECURRING tasks with cron:
+  crontab -l      (list your scheduled tasks - probably empty!)
+You'll meet cron again when you administer real systems.
 EOF
 
 # ===================
@@ -2024,18 +2277,125 @@ mkdir -p armory/treasury
 cat > armory/treasury/locked_door.txt << 'EOF'
 🔒 THE TREASURY DOOR 🔒
 
-Three keyholes glimmer in the torchlight.
-You insert all three keys...
+Three keyholes glimmer in the torchlight, and beyond the door
+you can hear the deep breathing of something ENORMOUS.
 
-The door swings open with a groan!
+The dragon_lair is sealed shut. (Try 'cd dragon_lair'... denied!)
 
-Ahead lies the dragon_lair.
+To open it you must speak the MASTER PASSPHRASE.
 
-Remember what you learned:
-• You read about the dragon in the library
-• You learned the echo spell
-• The dragon has a TRUE NAME (check scroll_13.txt in library)
+The passphrase is made of THREE WORDS:
+• One hidden in the SILVER key (library)
+• One hidden in the GOLD key (library's hidden archives - ls -a!)
+• One hidden in the BRONZE key (armory)
+
+Each key is Base64 encoded. Decode all three.
+Then decode encrypted_passphrase.txt to learn the correct ORDER.
+
+When you know all three words, run:
+  ./unlock_treasury.sh
+
+One more thing... a strange sealed_artifact.bin sits in the corner.
+'cat' cannot read it. Perhaps strings_scroll.txt can help.
 EOF
+
+cat > armory/treasury/encrypted_passphrase.txt << 'EOF'
+📜 THE ENCRYPTED PASSPHRASE SCROLL 📜
+
+Strange symbols cover this scroll. It's Base64!
+
+-----BEGIN VAULT INSTRUCTIONS-----
+VGhlIHZhdWx0IG9iZXlzIHRocmVlIHdvcmRzIHNwb2tlbiBpbiBvcmRlcjoKZmlyc3QgdGhlIFNJ
+TFZFUiB3b3JkLCB0aGVuIHRoZSBHT0xEIHdvcmQsIHRoZW4gdGhlIEJST05aRSB3b3JkLgpSdW4g
+Li91bmxvY2tfdHJlYXN1cnkuc2ggYW5kIHNwZWFrIGFsbCB0aHJlZSBhcyBvbmUgbGluZS4K
+-----END VAULT INSTRUCTIONS-----
+
+Decode it the same way you decoded the keys:
+  grep -m 1 "BEGIN VAULT" -A 3 encrypted_passphrase.txt | grep -v "BEGIN\|END" | base64 -d
+EOF
+
+cat > armory/treasury/strings_scroll.txt << 'EOF'
+💾 THE SCROLL OF STRINGS 💾
+
+⚡ NEW SPELL UNLOCKED: strings
+
+Some artifacts are BINARY - not made of readable text.
+Try 'cat sealed_artifact.bin' and you'll see... garbage!
+(If your terminal goes weird, type 'reset' to fix it.)
+
+The 'strings' spell extracts only the READABLE text
+hidden inside a binary file:
+
+  strings sealed_artifact.bin
+
+Combine it with grep to find specific secrets:
+
+  strings sealed_artifact.bin | grep FRAGMENT
+
+Real wizards use strings on programs, game files, and
+mysterious downloads to see what's hidden inside!
+EOF
+
+# Create the sealed binary artifact (strings challenge!)
+{
+  head -c 300 /dev/urandom
+  printf '\nFRAGMENT_ALPHA: The beast beyond the door is a FIRE DRAGON.\n'
+  head -c 300 /dev/urandom
+  printf '\nFRAGMENT_BETA: Its true name is recorded on a scroll from the year 1666.\n'
+  head -c 300 /dev/urandom
+  printf '\nFRAGMENT_GAMMA: Study the dragon_lore section of the library before you face it!\n'
+  head -c 300 /dev/urandom
+} > armory/treasury/sealed_artifact.bin
+
+# The treasury unlock script - validates the three-word passphrase!
+cat > armory/treasury/unlock_treasury.sh << 'EOF'
+#!/bin/bash
+# The Treasury Vault - speaks only to those who know the three words.
+LAIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/dragon_lair"
+
+echo ""
+echo "🔒 THE TREASURY VAULT 🔒"
+echo ""
+echo "A deep voice rumbles from the door:"
+echo "'SPEAK THE THREE WORDS OF POWER, IN THEIR PROPER ORDER.'"
+echo ""
+read -r -p "> " phrase
+
+# Normalize to lowercase for a kid-friendly check
+lower=$(echo "$phrase" | tr '[:upper:]' '[:lower:]')
+
+if [[ "$lower" == *"arcane"*"wisdom"*"power"* ]]; then
+    chmod 755 "$LAIR" 2>/dev/null
+    ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+    mkdir -p "$ROOT/.state" && touch "$ROOT/.state/treasury_unlocked"
+    echo ""
+    echo "✨ The three keyholes blaze with light! ✨"
+    echo "✨ Ancient gears grind... the door swings open! ✨"
+    echo ""
+    echo "🐉 A wave of heat rolls out. The dragon_lair is open."
+    echo ""
+    echo "Enter with: cd dragon_lair"
+    echo "(But you may want to read strings_scroll.txt first...)"
+    echo ""
+elif [[ "$lower" == *"arcane"* || "$lower" == *"wisdom"* || "$lower" == *"power"* ]]; then
+    echo ""
+    echo "🔒 The door shudders... but stays shut."
+    echo "'SOME words are right, but I need ALL THREE, IN ORDER.'"
+    echo ""
+    echo "Hint: decode encrypted_passphrase.txt to learn the order."
+    echo ""
+else
+    echo ""
+    echo "🔒 Nothing happens. The door remains sealed."
+    echo ""
+    echo "Hints:"
+    echo "• Decode all three keys with base64 -d"
+    echo "• Decode encrypted_passphrase.txt for the word ORDER"
+    echo "• Then run this script again and speak all three words"
+    echo ""
+fi
+EOF
+chmod +x armory/treasury/unlock_treasury.sh
 
 cat > armory/treasury/history_scroll.txt << 'EOF'
 📜 SCROLL OF MEMORY 📜
@@ -2070,28 +2430,56 @@ Smoke pours from its nostrils!
 You must speak the ancient incantation to put it to sleep!
 
 The incantation has TWO parts:
-1. The sleep spell (found in library/dragon_lore.txt)
+1. The sleep spell (found in library/dragon_lore/sleep_spells.txt)
 2. The dragon's TRUE NAME (hidden in library/archives - one of 2000 scrolls!)
 
 But wait... the dragon has left you an encrypted riddle:
 
 -----BEGIN DRAGON RIDDLE-----
-TXkgdHJ1ZSBuYW1lIGlzIGhpZGRlbiBpbiBzY3JvbGwgIzA2NjYuIFVzZSBncmVw
-IHRvIGZpbmQgaXQhIFNlYXJjaGluZyBmb3IgIklnbmlzIiBvciBkcmFnb24ncyAi
-dHJ1ZSBuYW1lIiB3aWxsIGhlbHAuCg==
+TXkgdHJ1ZSBuYW1lIHNsZWVwcyBhbW9uZyB0aGUgMjAwMCBzY3JvbGxzIG9mIHRoZSBsaWJyYXJ5
+IGFyY2hpdmVzLgpTZWFyY2ggYWxsIHRlbiBzaGVsdmVzIGF0IG9uY2Ugd2l0aCBncmVwIC1yLgpT
+ZWVrIHRoZSBzY3JvbGwgZnJvbSB0aGUgeWVhciAxNjY2Li4uCg==
 -----END DRAGON RIDDLE-----
 
-Decode this hint with: echo "TXkgdHJ..." | base64 -d
+Decode this hint the way you decoded the keys (grep + base64 -d).
+
+There is also a cursed_scroll.bin here. It is BINARY - cat won't work!
+Read curse_breaking.txt to learn how to extract its secrets.
 
 To face the dragon, run: ./sleep_dragon.sh
 
-You must speak BOTH parts together in ONE command!
-Hint: echo "first_part second_part"
+You must speak BOTH parts together in ONE line!
 EOF
+
+cat > armory/treasury/dragon_lair/curse_breaking.txt << 'EOF'
+🕯️  BREAKING THE CURSE 🕯️
+
+The cursed_scroll.bin was burned by dragonfire long ago.
+Only fragments of readable text survive inside the char.
+
+Extract them with the strings spell:
+  strings cursed_scroll.bin
+
+(You learned this spell in the treasury. If you skipped it,
+read ../strings_scroll.txt!)
+EOF
+
+# The cursed scroll - a binary file with the final hints inside
+{
+  head -c 250 /dev/urandom
+  printf '\nCURSED FRAGMENT 1: ...the sleep spell is written in the library, dragon_lore section...\n'
+  head -c 250 /dev/urandom
+  printf '\nCURSED FRAGMENT 2: ...speak the spell and the TRUE NAME together, in one breath...\n'
+  head -c 250 /dev/urandom
+  printf '\nCURSED FRAGMENT 3: ...the name begins with Ignis, the old word for fire...\n'
+  head -c 250 /dev/urandom
+} > armory/treasury/dragon_lair/cursed_scroll.bin
 
 # Create the interactive dragon fight script!
 cat > armory/treasury/dragon_lair/sleep_dragon.sh << 'EOF'
 #!/bin/bash
+TREASURE_ROOM="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/treasure_room"
+
 echo ""
 echo "🐉🐉🐉🐉🐉🐉🐉🐉🐉🐉🐉🐉🐉🐉🐉"
 echo "🐉  THE DRAGON AWAKENS!  🐉"
@@ -2102,7 +2490,13 @@ echo ""
 echo "Speak the incantation (hint: it has two parts - the sleep spell and my true name):"
 read -r incantation
 
-if [[ "$incantation" == *"somnum draconis"* && "$incantation" == *"Ignis Maximus"* ]]; then
+# Case-insensitive comparison so young wizards aren't punished for capitalization
+shopt -s nocasematch
+
+if [[ "$incantation" == *"somnum draconis"* && "$incantation" == *"ignis maximus"* ]]; then
+    chmod 755 "$TREASURE_ROOM" 2>/dev/null
+    ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+    mkdir -p "$ROOT/.state" && touch "$ROOT/.state/dragon_defeated"
     echo ""
     echo "✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨"
     echo "✨ The dragon's eyes grow heavy..."
@@ -2110,7 +2504,7 @@ if [[ "$incantation" == *"somnum draconis"* && "$incantation" == *"Ignis Maximus
     echo "✨ It collapses into deep slumber!"
     echo "✨✨✨✨✨✨✨✨✨✨✨✨✨✨✨"
     echo ""
-    echo "🎉 The path to the treasure_room is now clear!"
+    echo "🎉 The sealed treasure_room door creaks open!"
     echo ""
     echo "Enter with: cd treasure_room"
     echo "Then run: ./WELCOME.sh"
@@ -2119,13 +2513,13 @@ elif [[ "$incantation" == *"somnum draconis"* ]]; then
     echo ""
     echo "🐉 The dragon yawns slightly..."
     echo "🐉 'You know the sleep spell, but you haven't addressed me by my TRUE NAME!'"
-    echo "🐉 'Find my name in the ancient scrolls!' (Hint: try grep in the library)"
+    echo "🐉 'Find my name in the ancient scrolls!' (Hint: grep -r in library/archives)"
     echo ""
-elif [[ "$incantation" == *"Ignis Maximus"* ]]; then
+elif [[ "$incantation" == *"ignis maximus"* ]]; then
     echo ""
     echo "🐉 The dragon's eyes widen!"
     echo "🐉 'You know my name, but the sleep spell is still needed!'"
-    echo "🐉 'Seek the dragon lore in the library!'"
+    echo "🐉 'Seek the sleep_spells book in the library's dragon_lore section!'"
     echo ""
 else
     echo ""
@@ -2136,8 +2530,9 @@ else
     echo "💀 You take massive damage and flee back to the armory!"
     echo ""
     echo "Hint: You need BOTH the sleep spell AND the dragon's true name."
-    echo "      - Sleep spell: check library/dragon_lore.txt"
-    echo "      - True name: use grep to search library scrolls"
+    echo "      - Sleep spell: library/dragon_lore/sleep_spells.txt"
+    echo "      - True name: grep -r the library archives"
+    echo "      - Still stuck? strings cursed_scroll.bin"
     echo ""
 fi
 EOF
@@ -2148,6 +2543,8 @@ mkdir -p armory/treasury/dragon_lair/treasure_room
 # Victory script!
 cat > armory/treasury/dragon_lair/treasure_room/WELCOME.sh << 'EOF'
 #!/bin/bash
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
+mkdir -p "$ROOT/.state" && touch "$ROOT/.state/treasure_claimed"
 echo ""
 echo "✨🎉🏆🎊✨🎉🏆🎊✨🎉🏆🎊"
 echo "✨                          ✨"
@@ -2166,8 +2563,40 @@ echo "Read your rewards:"
 echo "  cat TREASURE.txt"
 echo "  cat final_wisdom.txt"
 echo ""
+echo "🗝️  Among the treasure you find the TOWER KEY!"
+echo "It unlocks the Masters Tower in the portal_chamber -"
+echo "advanced training for true terminal wizards."
+echo ""
+echo "Claim it with: ./tower_key.sh"
+echo ""
 EOF
 chmod +x armory/treasury/dragon_lair/treasure_room/WELCOME.sh
+
+# The tower key - unlocks the Masters Tower (post-game content)
+cat > armory/treasury/dragon_lair/treasure_room/tower_key.sh << 'EOF'
+#!/bin/bash
+DUNGEON_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
+TOWER="$DUNGEON_ROOT/portal_chamber/masters_tower"
+
+chmod 755 "$TOWER" 2>/dev/null
+mkdir -p "$DUNGEON_ROOT/.state" && touch "$DUNGEON_ROOT/.state/tower_unlocked"
+echo ""
+echo "🗝️ ✨ The Tower Key glows in your hand! ✨ 🗝️"
+echo ""
+echo "Far away, in the portal_chamber, you hear a great door unlock..."
+echo ""
+echo "🏰 THE MASTERS TOWER IS NOW OPEN! 🏰"
+echo ""
+echo "Advanced training awaits: text processing, archives,"
+echo "file comparison, binary mysteries, sed & awk!"
+echo ""
+echo "Journey there:"
+echo "  cd \$DUNGEON  (or navigate back to the dungeon entrance)"
+echo "  cd portal_chamber/masters_tower"
+echo "  cat entrance.txt"
+echo ""
+EOF
+chmod +x armory/treasury/dragon_lair/treasure_room/tower_key.sh
 
 cat > armory/treasury/dragon_lair/treasure_room/TREASURE.txt << 'EOF'
 💎💎💎 THE LEGENDARY TREASURE! 💎💎💎
@@ -2353,6 +2782,219 @@ TIPS:
 • Ctrl+L        Clear screen
 EOF
 
+# ===================
+# THE LIVING DUNGEON (optional reactive layer)
+# ===================
+# Players activate it with: source enter_dungeon.sh
+# A shell hook then runs a hidden .room script whenever they enter a
+# directory that has one - but ONLY inside the dungeon, never elsewhere.
+mkdir -p .state
+
+cat > enter_dungeon.sh << 'OUTER_EOF'
+#!/bin/bash
+# 🏰 THE LIVING DUNGEON 🏰
+#
+# This is a SOURCING spell. Cast it like this:
+#     source enter_dungeon.sh
+#
+# It teaches your shell to notice when you walk into a room,
+# so the dungeon can react to you. Leave anytime: leave_dungeon
+
+# Detect the classic mistake: running instead of sourcing.
+if [ -n "$BASH_VERSION" ] && [ "${BASH_SOURCE[0]}" = "$0" ]; then
+  echo "🧙 Almost! This spell must be SOURCED, not run:"
+  echo ""
+  echo "    source enter_dungeon.sh"
+  echo ""
+  echo "WHY? Running ./enter_dungeon.sh starts a NEW shell, casts the"
+  echo "spell there, and that shell instantly vanishes. 'source' casts"
+  echo "the spell in YOUR shell - the one you're exploring with!"
+  exit 1
+fi
+
+if [ -n "$BASH_VERSION" ]; then
+  export DUNGEON_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+else
+  # zsh
+  export DUNGEON_ROOT="$(cd "$(dirname "${(%):-%N}")" && pwd)"
+fi
+mkdir -p "$DUNGEON_ROOT/.state"
+
+__dungeon_last_pwd=""
+
+__dungeon_hook() {
+  [ "$PWD" = "$__dungeon_last_pwd" ] && return
+  __dungeon_last_pwd="$PWD"
+  # Only ever react inside the dungeon - never elsewhere on the system.
+  case "$PWD/" in
+    "$DUNGEON_ROOT"/*)
+      if [ -f "$PWD/.room" ]; then
+        DUNGEON_ROOT="$DUNGEON_ROOT" bash "$PWD/.room"
+      fi
+      ;;
+  esac
+}
+
+if [ -n "$ZSH_VERSION" ]; then
+  chpwd_functions+=(__dungeon_hook)
+else
+  case ";$PROMPT_COMMAND;" in
+    *";__dungeon_hook;"*) : ;;  # already installed
+    *) PROMPT_COMMAND="__dungeon_hook${PROMPT_COMMAND:+;$PROMPT_COMMAND}" ;;
+  esac
+fi
+
+leave_dungeon() {
+  if [ -n "$ZSH_VERSION" ]; then
+    chpwd_functions=(${chpwd_functions:#__dungeon_hook})
+  else
+    PROMPT_COMMAND="${PROMPT_COMMAND//__dungeon_hook;/}"
+    PROMPT_COMMAND="${PROMPT_COMMAND//__dungeon_hook/}"
+  fi
+  unset DUNGEON_ROOT __dungeon_last_pwd
+  unset -f __dungeon_hook leave_dungeon
+  echo "🚪 You step out of the living dungeon. The magic sleeps until you source it again."
+}
+
+echo "✨ The dungeon STIRS. It will notice you now..."
+echo "   (Undo anytime with: leave_dungeon)"
+__dungeon_hook   # react to the room you're standing in right now
+OUTER_EOF
+chmod +x enter_dungeon.sh
+
+# --- .room scripts: what each room does when you walk in ---
+
+# Entrance hall: greets you and regenerates quest_log.txt from real progress
+cat > .room << 'OUTER_EOF'
+#!/bin/bash
+STATE="$DUNGEON_ROOT/.state"
+mark() { [ -f "$STATE/$1" ]; }
+box()  { if mark "$1"; then echo "[x]"; else echo "[ ]"; fi; }
+
+# The quest log updates ITSELF now
+cat > "$DUNGEON_ROOT/quest_log.txt" << LOG
+📋 MAIN QUEST LOG 📋   (this log updates as you play!)
+
+PRIMARY OBJECTIVES:
+$(box treasury_unlocked) Open the treasury vault (find & decode the 3 keys)
+$(box dragon_defeated) Put the dragon to sleep
+$(box treasure_claimed) Claim the legendary treasure
+$(box tower_unlocked) Unlock the Masters Tower
+
+EXPLORATION:
+$(box visited_library) Explore the library
+$(box visited_armory) Explore the armory
+$(box visited_portals) Explore the portal chamber
+$(box found_secret_realm) Discover the secret realm (hint: ls -a)
+LOG
+
+if ! mark seen_entrance; then
+  touch "$STATE/seen_entrance"
+  echo "🏰 The torches flare as you enter. The dungeon is ALIVE - rooms notice you now."
+  echo "   Your quest_log.txt will update itself as you progress. Try: cd library"
+elif mark dragon_defeated; then
+  echo "🏰 The entrance hall is peaceful. Faint snoring echoes up from far below."
+else
+  echo "🏰 The entrance hall. Your quest_log.txt has quietly updated itself."
+fi
+OUTER_EOF
+
+# Library: the librarian remembers you
+cat > library/.room << 'OUTER_EOF'
+#!/bin/bash
+STATE="$DUNGEON_ROOT/.state"
+first=""; [ -f "$STATE/visited_library" ] || first=yes
+touch "$STATE/visited_library"
+if [ -f "$STATE/dragon_defeated" ]; then
+  echo "👴 The librarian bows deeply: 'The Dragon-Sleeper returns! What an honor.'"
+elif [ -f "$STATE/treasury_unlocked" ]; then
+  echo "👴 The librarian whispers: 'I heard the vault open... be careful down there.'"
+elif [ -n "$first" ]; then
+  echo "👴 The librarian looks up: 'A new wizard! Start with librarian_greeting.txt.'"
+else
+  echo "👴 The librarian nods: 'Back again? The archives hold what you seek.'"
+fi
+OUTER_EOF
+
+# Armory: the master-at-arms tracks your progress
+cat > armory/.room << 'OUTER_EOF'
+#!/bin/bash
+STATE="$DUNGEON_ROOT/.state"
+first=""; [ -f "$STATE/visited_armory" ] || first=yes
+touch "$STATE/visited_armory"
+if [ -f "$STATE/dragon_defeated" ]; then
+  echo "🎯 The master-at-arms salutes you: 'The dragon sleeps because of YOUR training!'"
+elif [ -n "$first" ]; then
+  echo "🎯 The master-at-arms sizes you up: 'Fresh recruit! Read training_master.txt.'"
+else
+  echo "🎯 The master-at-arms grunts: 'Keep training. The dragon won't nap itself.'"
+fi
+OUTER_EOF
+
+# Portal chamber
+cat > portal_chamber/.room << 'OUTER_EOF'
+#!/bin/bash
+STATE="$DUNGEON_ROOT/.state"
+if [ ! -f "$STATE/visited_portals" ]; then
+  touch "$STATE/visited_portals"
+  echo "🌀 Three portals crackle with energy. A fourth door - the tower - stands sealed."
+elif [ -f "$STATE/tower_unlocked" ]; then
+  echo "🌀 The portals hum. The Masters Tower door stands OPEN, awaiting you."
+else
+  echo "🌀 The portals swirl invitingly."
+fi
+OUTER_EOF
+
+# Treasury: tension rises
+cat > armory/treasury/.room << 'OUTER_EOF'
+#!/bin/bash
+STATE="$DUNGEON_ROOT/.state"
+if [ -f "$STATE/dragon_defeated" ]; then
+  echo "🔓 The vault stands open. Gentle snoring drifts from the lair below."
+elif [ -f "$STATE/treasury_unlocked" ]; then
+  echo "🔓 The great door hangs open. Heat and low breathing rise from the dragon_lair..."
+else
+  echo "🔒 A massive sealed door. Something ENORMOUS breathes behind it."
+fi
+OUTER_EOF
+
+# Dragon lair: the boss reacts
+cat > armory/treasury/dragon_lair/.room << 'OUTER_EOF'
+#!/bin/bash
+STATE="$DUNGEON_ROOT/.state"
+if [ -f "$STATE/dragon_defeated" ]; then
+  echo "😴 The great dragon snores peacefully. Zzzzzz... the treasure_room lies open."
+else
+  echo "🐉 TWO ENORMOUS EYES SNAP OPEN IN THE DARK. The dragon is watching you."
+  echo "   (Read dragon.txt. Do NOT run ./sleep_dragon.sh unprepared!)"
+fi
+OUTER_EOF
+
+# Secret realm: found it!
+cat > .secret_realm/.room << 'OUTER_EOF'
+#!/bin/bash
+STATE="$DUNGEON_ROOT/.state"
+if [ ! -f "$STATE/found_secret_realm" ]; then
+  touch "$STATE/found_secret_realm"
+  echo "✨ You slip through a crack in reality itself. FEW ever find this place..."
+fi
+OUTER_EOF
+
+# Masters tower
+cat > portal_chamber/masters_tower/.room << 'OUTER_EOF'
+#!/bin/bash
+echo "🏰 The tower thrums with advanced magic. Five chambers await your mastery."
+OUTER_EOF
+
+# ===================
+# SEAL THE GATES! (progression locks)
+# ===================
+# Lock innermost doors first (once a parent is 000, children can't be reached).
+# unlock_treasury.sh, sleep_dragon.sh, and tower_key.sh re-open these on victory.
+chmod 000 armory/treasury/dragon_lair/treasure_room
+chmod 000 armory/treasury/dragon_lair
+chmod 000 portal_chamber/masters_tower
+
 echo ""
 echo "✨ EPIC Terminal Dungeon created successfully! ✨"
 echo ""
@@ -2366,7 +3008,6 @@ echo "   - INTERACTIVE dragon boss fight"
 echo "   - Hidden archives (. prefix) with secrets"
 echo "   - Binary file challenges (strings)"
 echo "   - Cryptography puzzles (base64)"
-echo "   - Text editor training (nano/vim)"
 echo "   - Complete cheat sheet + hints"
 echo ""
 echo "🐉 EPIC FEATURES:"
@@ -2389,7 +3030,7 @@ echo "  cd terminal_dungeon"
 echo "  cat welcome.txt"
 echo ""
 echo "⚠️  LIBRARY CHALLENGE:"
-echo "    The library has 4 sections with 2000 scrolls in archives!"
+echo "    The archives hold 2000 scrolls across 10 bookshelves!"
 echo "    Use 'grep -r' to search recursively through all sections:"
 echo "    cd library"
 echo "    grep -r 'dragon' ."
@@ -2397,6 +3038,15 @@ echo ""
 echo "If you get stuck:"
 echo "  cat HINTS.txt"
 echo "  cat CHEAT_SHEET.txt"
+echo ""
+echo "✨ OPTIONAL: make the dungeon ALIVE (rooms react to you!):"
+echo "    cd terminal_dungeon"
+echo "    source enter_dungeon.sh"
+echo ""
+echo "🔒 LOCKED AREAS (this is part of the game!):"
+echo "    dragon_lair    - opens when you speak the master passphrase"
+echo "    treasure_room  - opens when you defeat the dragon"
+echo "    masters_tower  - opens when you claim the tower key"
 echo ""
 echo "🎮 PROGRESSION:"
 echo "    1. Complete main quest (dragon fight)"

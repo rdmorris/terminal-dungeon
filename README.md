@@ -31,7 +31,7 @@ Terminal Dungeon transforms your shell into an **interactive RPG** where the fil
 ## ✨ Features
 
 ### 🏛️ Massive Multi-Level Library
-- **4 themed sections**: Ancient History, Dragon Lore, Magical Arts, Reference
+- **4 themed sections**: Archives, Dragon Lore, Magical Arts, Reference
 - **10 bookshelves** in the archives, each containing 200 scrolls (2000 total!)
 - **Hidden directories** teaching dotfile concepts (`.secret_archives`)
 - **Realistic file hierarchy** mirroring real-world project structures
@@ -91,7 +91,7 @@ Unlock after defeating the dragon to access:
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/terminal-dungeon.git
+git clone https://github.com/rdmorris/terminal-dungeon.git
 cd terminal-dungeon
 
 # Make the setup script executable
@@ -106,6 +106,42 @@ cat welcome.txt
 ```
 
 That's it! Your adventure begins!
+
+### ✨ The Living Dungeon (optional)
+
+[#-the-living-dungeon-optional](#-the-living-dungeon-optional)
+
+By default the dungeon is static files. But cast this spell from the dungeon entrance:
+
+```bash
+source enter_dungeon.sh
+```
+
+...and the dungeon comes **alive**:
+
+- **Rooms react when you walk in** — the librarian greets you, the dragon's eyes snap open, the treasury door breathes
+- **NPCs remember you** — first visits, return visits, and post-victory dialogue all differ
+- **`quest_log.txt` updates itself** — checkboxes tick off as you hit real milestones
+- Undo anytime with `leave_dungeon`
+
+**How it works (a lesson in itself!):** sourcing installs a `PROMPT_COMMAND` hook (bash) or `chpwd` hook (zsh) that notices when your directory changes and runs a hidden `.room` script — but *only inside the dungeon*, never elsewhere on your system. It must be `source`d rather than run, because a script runs in a child shell that can't touch your session — and if a kid runs it by mistake, it explains exactly that. Progress lives in hidden marker files under `.state/`.
+
+The game is fully playable without this — it's a layer on top, not a requirement.
+
+### 🔒 How the Locked Doors Work
+
+[#-how-the-locked-doors-work](#-how-the-locked-doors-work)
+
+Three areas start **sealed with real Unix permissions** (`chmod 000`) — trying to `cd` into them gives you an authentic "Permission denied":
+
+- **dragon\_lair** — opens when you speak the master passphrase to `unlock_treasury.sh`
+- **treasure\_room** — opens when you defeat the dragon in `sleep_dragon.sh`
+- **masters\_tower** — opens when you claim the tower key in the treasure room
+
+This is part of the game! Two practical notes:
+
+- **Don't play as root** — root walks through locked doors, which spoils everything.
+- **Rebuilding**: re-running `./setup-dungeon.sh` detects an existing dungeon and asks before wiping it (it unlocks the sealed rooms first so the delete works cleanly).
 
 ## 📖 What You'll Learn
 
@@ -181,33 +217,30 @@ terminal_dungeon/
 │   ├── 🗝️ silver_key.txt (Base64 encoded)
 │   ├── entrance_scroll.txt
 │   ├── librarian_greeting.txt
+│   ├── search_scroll.txt
 │   │
 │   ├── reference/                 (Tutorials & guides)
-│   │   ├── search_techniques/
-│   │   │   ├── grep_guide.txt
-│   │   │   └── find_guide.txt
-│   │   └── cryptography/
-│   │       └── base64_guide.txt
+│   │   ├── grep_guide.txt
+│   │   ├── find_guide.txt
+│   │   └── base64_guide.txt
 │   │
-│   ├── dragon_lore/               (Quest information)
-│   │   ├── combat_techniques/
-│   │   │   └── sleep_spells.txt
-│   │   └── bestiary/
-│   │       └── dragon_species.txt
+│   ├── dragon_lore/               (Required reading!)
+│   │   ├── sleep_spells.txt       💤 The sleep spell lives here
+│   │   └── dragon_species.txt
 │   │
-│   ├── magical_arts/              (Spell knowledge)
+│   ├── magical_arts/
 │   │   └── enchantments/
 │   │       └── echo_magic.txt
 │   │
-│   ├── ancient_history/           ⭐ THE ARCHIVE CHALLENGE!
+│   ├── archives/                  ⭐ THE ARCHIVE CHALLENGE!
 │   │   ├── README.txt
-│   │   ├── shelf_01/ (200 scrolls - Years 1000-1199)
-│   │   ├── shelf_02/ (200 scrolls - Years 1200-1399)
-│   │   ├── shelf_03/ (200 scrolls) 🐉 Dragon's true name in scroll 0666
-│   │   ├── shelf_04/ (200 scrolls)
+│   │   ├── shelf_01/ (200 scrolls - years 1001-1200)
+│   │   ├── shelf_02/ (200 scrolls)
+│   │   ├── shelf_03/ (200 scrolls)
+│   │   ├── shelf_04/ (200 scrolls) 🐉 Dragon's true name in scroll 0666
 │   │   ├── shelf_05/ (200 scrolls)
-│   │   ├── shelf_06/ (200 scrolls) 🔍 Gold key clue in scroll 1313
-│   │   ├── shelf_07/ (200 scrolls)
+│   │   ├── shelf_06/ (200 scrolls)
+│   │   ├── shelf_07/ (200 scrolls) 🔍 Gold key clue in scroll 1313
 │   │   ├── shelf_08/ (200 scrolls)
 │   │   ├── shelf_09/ (200 scrolls)
 │   │   └── shelf_10/ (200 scrolls)
@@ -223,6 +256,7 @@ terminal_dungeon/
 │   ├── entrance_note.txt
 │   ├── training_master.txt
 │   ├── permission_guide.txt
+│   ├── locked_scroll.txt (chmod challenge)
 │   ├── enchanted_shield.txt
 │   │
 │   ├── 🎯 target_range/              ⭐ GREP TRAINING!
@@ -245,18 +279,19 @@ terminal_dungeon/
 │       ├── encrypted_passphrase.txt (Base64)
 │       ├── 💾 sealed_artifact.bin (strings challenge!)
 │       ├── strings_scroll.txt
-│       ├── unlock_treasury.sh (interactive script)
+│       ├── unlock_treasury.sh (speak the master passphrase!)
 │       │
-│       └── dragon_lair/
+│       └── dragon_lair/           🔒 LOCKED until passphrase spoken
 │           ├── dragon.txt
 │           ├── 💾 cursed_scroll.bin (strings required!)
 │           ├── curse_breaking.txt
 │           ├── sleep_dragon.sh ⚡ BOSS FIGHT!
 │           │
-│           └── treasure_room/
+│           └── treasure_room/     🔒 LOCKED until dragon sleeps
 │               ├── WELCOME.sh (victory fanfare)
 │               ├── 🏆 TREASURE.txt
-│               └── final_wisdom.txt
+│               ├── final_wisdom.txt
+│               └── tower_key.sh (unlocks the Masters Tower!)
 │
 ├── 🌀 portal_chamber/
 │   ├── portal_intro.txt
@@ -276,44 +311,13 @@ terminal_dungeon/
 │   │   ├── realm_entrance.txt
 │   │   └── network_scroll.txt
 │   │
-│   └── 🏰 masters_tower/          ⭐ POST-GAME CONTENT!
+│   └── 🏰 masters_tower/          🔒 LOCKED until tower key claimed!
 │       ├── entrance.txt
-│       │
 │       ├── text_processing_lab/
-│       │   ├── README.txt
-│       │   ├── sample_data.txt
-│       │   ├── head_tail_scroll.txt
-│       │   ├── wc_scroll.txt
-│       │   ├── sort_scroll.txt
-│       │   ├── uniq_scroll.txt
-│       │   └── cut_scroll.txt
-│       │
 │       ├── archive_vault/
-│       │   ├── README.txt
-│       │   ├── tar_scroll.txt
-│       │   ├── gzip_scroll.txt
-│       │   ├── scrolls_to_archive/
-│       │   ├── sealed_ancient_archive.tar.gz
-│       │   └── challenge.txt
-│       │
 │       ├── comparison_chamber/
-│       │   ├── README.txt
-│       │   ├── diff_scroll.txt
-│       │   ├── prophecy_original.txt
-│       │   ├── prophecy_corrupted.txt
-│       │   └── challenge.txt
-│       │
 │       ├── binary_mysteries/
-│       │   ├── strings_mastery.txt
-│       │   ├── mystery.bin
-│       │   └── challenge.txt
-│       │
 │       ├── transformation_workshop/
-│       │   ├── README.txt
-│       │   ├── sed_scroll.txt
-│       │   ├── awk_scroll.txt
-│       │   └── challenge.txt
-│       │
 │       └── completion_scroll.txt
 │
 └── ✨ .secret_realm/              🎁 SECRET ENDING!
@@ -365,17 +369,17 @@ Use only the commands mentioned in `welcome.txt`:
 
 **🔐 The Three Keys (Cryptography)**
 1. Find three Base64-encoded keys in different locations
-2. Decode each one using `base64 -d`
-3. Extract the master passphrase parts
-4. Combine them to unlock the treasury
+2. Decode each one using `base64 -d` — each reveals one word
+3. Decode `encrypted_passphrase.txt` to learn the word order
+4. Run `./unlock_treasury.sh` and speak all three words to open the dragon_lair
 
 Example:
 ```bash
 # Decode a key
-grep "BEGIN SILVER" -A 2 silver_key.txt | grep -v "BEGIN\|END" | base64 -d
+grep -m 1 "BEGIN SILVER" -A 2 silver_key.txt | grep -v "BEGIN\|END" | base64 -d
 
 # Advanced: Store as variable
-export SILVER_KEY=$(grep "BEGIN SILVER" -A 2 library/silver_key.txt | grep -v "BEGIN\|END" | base64 -d)
+export SILVER_KEY=$(grep -m 1 "BEGIN SILVER" -A 2 library/silver_key.txt | grep -v "BEGIN\|END" | base64 -d)
 echo $SILVER_KEY
 ```
 
@@ -408,7 +412,7 @@ Search the library:
 cd library
 # Search recursively through ALL sections and shelves
 grep -r "dragon" .
-grep -r "SECRET" ancient_history/
+grep -r "SECRET" archives/
 grep -r "Ignis" .
 ```
 
